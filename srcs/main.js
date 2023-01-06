@@ -1,11 +1,26 @@
 // usage example: drawLine({x:100, y:100}, {x:200, y:100});
 const drawLine = function (startPoint, endPoint)
 {
+	const canvas = document.querySelector("#canvas");
 	const ctx = canvas.getContext("2d");
 	ctx.beginPath();
+	ctx.lineWidth = 1;
 	ctx.moveTo(startPoint.x, startPoint.y);
 	ctx.lineTo(endPoint.x, endPoint.y);
 	ctx.stroke();
+}
+
+// usage example: drawPoint({x:100, y:100});
+const drawPoint = function (position)
+{
+	const canvas = document.querySelector("#canvas");
+	const ctx = canvas.getContext("2d");
+	ctx.lineWidth = 8;
+	ctx.lineCap = "round";
+	ctx.beginPath();
+	ctx.moveTo(position.x, position.y);
+	ctx.lineTo(position.x, position.y);
+	ctx.stroke();	
 }
 
 class Wall {
@@ -19,6 +34,10 @@ class Wall {
 	}
 };
 
+const degreeToRadian = function(degree){
+	return (0.0174532925 * degree);
+}
+
 class Ray {
 	constructor(x, y) {
 		this.pos = {x: x, y: y};
@@ -31,6 +50,11 @@ class Ray {
 			y: this.pos.y + this.dir.y * 10,
 		};
 		drawLine(this.pos, translateDir);
+	}
+
+	update(x, y) {
+		this.pos.x += x;
+		this.pos.y += y;
 	}
 
 	cast(wall) {
@@ -62,22 +86,56 @@ class Ray {
 	}
 };
 
-window.addEventListener("load", () =>{
+class Player {
+	constructor (x, y) {
+		this.pos = {x: x, y: y};
+		this.ray = new Ray(x, y);
+
+	}
+
+	update(x, y) {
+		this.pos.x += x;
+		this.pos.y += y;
+		this.ray.update(x, y);
+	}
+
+	show() {
+		drawPoint(this.pos);
+		this.ray.show();
+	}
+};
+
+const player = new Player(100, 100);
+const wall = new Wall(300, 100, 300, 300);
+
+document.addEventListener("keydown", (e) => {
+	if (e.key === 'w')
+		player.update(0, -10);
+	if (e.key === 's')
+		player.update(0, 10);
+	if (e.key === 'd')
+		player.update(10, 0);
+	if (e.key === 'a')
+		player.update(-10, 0);
+
+	renderScene();
+});
+
+const renderScene = function (){
 	const canvas = document.querySelector("#canvas");
 	const ctx = canvas.getContext("2d");
 	canvas.height = window.innerHeight;
 	canvas.width = window.innerWidth;
 
-	//const wall = new Wall(300, 100, 300, 300);
-	const wall = new Wall(300, 100, 300, 300);
 	wall.show();
+	player.show();
 
-	const ray = new Ray(100, 200);
-	ray.show();
-
-	let intersectPoint = ray.cast(wall);
+	let intersectPoint = player.ray.cast(wall);
 	if (intersectPoint) {
 		console.log(intersectPoint);
 	}
+}
 
+window.addEventListener("load", () =>{
+	renderScene();
 });
