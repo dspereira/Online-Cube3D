@@ -95,18 +95,27 @@ class Ray {
 class Player {
 	constructor (x, y) {
 		this.pos = {x: x, y: y};
-		this.ray = new Ray(x, y, 140);
+		//this.ray = new Ray(x, y, 140);
+		this.rays = [];
+		for (let i = 0; i <= 45; i++)
+			this.rays.push(new Ray(x, y, i));
+		for (let i = 315; i <= 360; i++)
+			this.rays.push(new Ray(x, y, i));
 	}
 
 	update(x, y) {
 		this.pos.x += x;
 		this.pos.y += y;
-		this.ray.update(x, y);
+		//this.ray.update(x, y);
+		for (let i = 0; i < this.rays.length; i++)
+			this.rays[i].update(x, y);
 	}
 
 	show() {
 		drawPoint(this.pos);
-		this.ray.show();
+		//this.ray.show();
+		for(const ray of this.rays)
+			ray.show();
 	}
 };
 
@@ -135,10 +144,20 @@ const renderScene = function (){
 	wall.show();
 	player.show();
 
+	for (const ray of player.rays)
+	{
+		let intersectPoint = ray.cast(wall);
+		if (intersectPoint) {
+			console.log(intersectPoint);
+		}
+	}
+
+/*
 	let intersectPoint = player.ray.cast(wall);
 	if (intersectPoint) {
 		console.log(intersectPoint);
 	}
+*/
 }
 
 window.addEventListener("load", () =>{
