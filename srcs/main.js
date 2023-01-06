@@ -39,25 +39,30 @@ const degreeToRadian = function(degree){
 }
 
 class Ray {
-	constructor(x, y) {
+	constructor(x, y, angleDegree) {
 		this.pos = {x: x, y: y};
-		this.dir = {x: 1, y: 0};
+		this.angleRadians = degreeToRadian(angleDegree);
+		this.dir = {
+			x: 10 * Math.cos(this.angleRadians) + this.pos.x,
+			y: -10 * Math.sin(this.angleRadians) + this.pos.y
+		};
 	}
 
 	show() {
-		const translateDir = {
-			x: this.pos.x + this.dir.x * 10,
-			y: this.pos.y + this.dir.y * 10,
-		};
-		drawLine(this.pos, translateDir);
+		drawLine(this.pos, this.dir);
 	}
 
 	update(x, y) {
 		this.pos.x += x;
 		this.pos.y += y;
+		this.dir.x = 10 * Math.cos(this.angleRadians) + this.pos.x,
+		this.dir.y = -10 * Math.sin(this.angleRadians) + this.pos.y	
 	}
 
 	cast(wall) {
+
+		let intersectPoint;
+
 		const x1 = wall.sPoint.x;
 		const y1 = wall.sPoint.y;
 		const x2 = wall.ePoint.x;
@@ -65,8 +70,8 @@ class Ray {
 
 		const x3 = this.pos.x;
 		const y3 = this.pos.y;
-		const x4 = this.pos.x + this.dir.x * 10;
-		const y4 = this.pos.y + this.dir.y * 10;
+		const x4 = this.dir.x;
+		const y4 = this.dir.y;
 
 		const den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
 		if (!den)
@@ -75,11 +80,12 @@ class Ray {
 		const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
 		const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
 		if (t > 0 && t < 1 && u > 0) {
-
-			return {
+			intersectPoint = {
 				x: x1 + t * (x2 - x1), 
-				y: y1 + t * (y2 - y1)
-			};
+				y: y1 + t * (y2 - y1)	
+			}
+			drawLine(this.pos, intersectPoint);
+			return intersectPoint;
 		}
 		else 
 			return ;
@@ -89,8 +95,7 @@ class Ray {
 class Player {
 	constructor (x, y) {
 		this.pos = {x: x, y: y};
-		this.ray = new Ray(x, y);
-
+		this.ray = new Ray(x, y, 140);
 	}
 
 	update(x, y) {
