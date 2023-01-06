@@ -41,6 +41,7 @@ const degreeToRadian = function(degree){
 class Ray {
 	constructor(x, y, angleDegree) {
 		this.pos = {x: x, y: y};
+		this.angleDegree = angleDegree;
 		this.angleRadians = degreeToRadian(angleDegree);
 		this.dir = {
 			x: 10 * Math.cos(this.angleRadians) + this.pos.x,
@@ -55,6 +56,12 @@ class Ray {
 	update(x, y) {
 		this.pos.x += x;
 		this.pos.y += y;
+		this.dir.x = 10 * Math.cos(this.angleRadians) + this.pos.x,
+		this.dir.y = -10 * Math.sin(this.angleRadians) + this.pos.y	
+	}
+
+	updateDir(angle){
+		this.angleRadians += degreeToRadian(angle);
 		this.dir.x = 10 * Math.cos(this.angleRadians) + this.pos.x,
 		this.dir.y = -10 * Math.sin(this.angleRadians) + this.pos.y	
 	}
@@ -95,20 +102,62 @@ class Ray {
 class Player {
 	constructor (x, y) {
 		this.pos = {x: x, y: y};
-		//this.ray = new Ray(x, y, 140);
 		this.rays = [];
 		for (let i = 0; i <= 45; i++)
 			this.rays.push(new Ray(x, y, i));
-		for (let i = 315; i <= 360; i++)
+		for (let i = 314; i <= 359; i++)
 			this.rays.push(new Ray(x, y, i));
 	}
 
-	update(x, y) {
+	updatePosition(x, y) {
 		this.pos.x += x;
 		this.pos.y += y;
-		//this.ray.update(x, y);
 		for (let i = 0; i < this.rays.length; i++)
 			this.rays[i].update(x, y);
+	}
+
+	moveForward() {
+		const ray = this.rays[0];
+		let x = Math.cos(ray.angleRadians) * 10;
+		let y = -Math.sin(ray.angleRadians) * 10;
+		this.updatePosition(x, y);
+	}
+
+	moveUp() {
+		const ray = this.rays[0];
+		let x = Math.cos(ray.angleRadians) * 10;
+		let y = -Math.sin(ray.angleRadians) * 10;
+
+		this.updatePosition(x, y);
+	}
+
+	moveBack() {
+		const ray = this.rays[0];
+		let x = Math.cos(ray.angleRadians) * -10;
+		let y = -Math.sin(ray.angleRadians) * -10;
+
+		this.updatePosition(x, y);
+	}
+
+	moveRight() {
+		const ray = this.rays[0];
+		let x = Math.cos(ray.angleRadians - degreeToRadian(-90)) * -10;
+		let y = -Math.sin(ray.angleRadians - degreeToRadian(-90)) * -10;
+
+		this.updatePosition(x, y);
+	}
+
+	moveLeft() {
+		const ray = this.rays[0];
+		let x = Math.cos(ray.angleRadians - degreeToRadian(90)) * -10;
+		let y = -Math.sin(ray.angleRadians - degreeToRadian(90)) * -10;
+
+		this.updatePosition(x, y);
+	}
+
+	updateRays(dir) {
+		for (let i = 0; i < this.rays.length; i++)
+			this.rays[i].updateDir(dir);
 	}
 
 	show() {
@@ -124,13 +173,21 @@ const wall = new Wall(300, 100, 300, 300);
 
 document.addEventListener("keydown", (e) => {
 	if (e.key === 'w')
-		player.update(0, -10);
+		player.moveForward()
+		//player.updatePosition(0, -10);
 	if (e.key === 's')
-		player.update(0, 10);
+		player.moveBack();
+		//player.updatePosition(0, 10);
 	if (e.key === 'd')
-		player.update(10, 0);
+		player.moveRight();
+		//player.updatePosition(10, 0);
 	if (e.key === 'a')
-		player.update(-10, 0);
+		player.moveLeft();
+		//player.updatePosition(-10, 0);
+	if (e.key === 'ArrowUp')
+		player.updateRays(10);
+	if (e.key === 'ArrowDown')
+		player.updateRays(-10);
 
 	renderScene();
 });
@@ -147,19 +204,12 @@ const renderScene = function (){
 	for (const ray of player.rays)
 	{
 		let intersectPoint = ray.cast(wall);
-		if (intersectPoint) {
+		/*if (intersectPoint) {
 			console.log(intersectPoint);
-		}
+		}*/
 	}
-
-/*
-	let intersectPoint = player.ray.cast(wall);
-	if (intersectPoint) {
-		console.log(intersectPoint);
-	}
-*/
 }
 
-window.addEventListener("load", () =>{
+window.addEventListener("load", () => {
 	renderScene();
 });
