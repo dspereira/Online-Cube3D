@@ -1,3 +1,31 @@
+// 24x24
+const map = [  
+	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,2,2,2,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1],
+	[1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,3,0,0,0,3,0,0,0,1],
+	[1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,2,2,0,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,4,0,0,0,0,5,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,4,0,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+];
+
 // usage example: drawLine({x:100, y:100}, {x:200, y:100});
 const drawLine = function (startPoint, endPoint)
 {
@@ -15,12 +43,34 @@ const drawPoint = function (position)
 {
 	const canvas = document.querySelector("#canvas");
 	const ctx = canvas.getContext("2d");
-	ctx.lineWidth = 8;
+	ctx.lineWidth = 25;
 	ctx.lineCap = "round";
 	ctx.beginPath();
 	ctx.moveTo(position.x, position.y);
 	ctx.lineTo(position.x, position.y);
-	ctx.stroke();	
+	ctx.stroke();
+}
+
+const drawWall = function(x, y, size) {
+	const ctx = canvas.getContext("2d");
+	ctx.fillRect(x, y, size, size);
+
+}
+
+const renderMap = function()
+{
+	let x = 0;
+	let y = 0;
+	for (const line of map) {
+		for (const elm of line) {
+			if (elm)
+				drawWall(x, y, 50);
+			x += 50;
+		}
+		x = 0;
+		y += 50;
+		console.log('');
+	}
 }
 
 class Wall {
@@ -56,14 +106,14 @@ class Ray {
 	update(x, y) {
 		this.pos.x += x;
 		this.pos.y += y;
-		this.dir.x = 10 * Math.cos(this.angleRadians) + this.pos.x,
-		this.dir.y = -10 * Math.sin(this.angleRadians) + this.pos.y	
+		this.dir.x = 20 * Math.cos(this.angleRadians) + this.pos.x,
+		this.dir.y = -20 * Math.sin(this.angleRadians) + this.pos.y	
 	}
 
 	updateDir(angle){
 		this.angleRadians += degreeToRadian(angle);
-		this.dir.x = 10 * Math.cos(this.angleRadians) + this.pos.x,
-		this.dir.y = -10 * Math.sin(this.angleRadians) + this.pos.y	
+		this.dir.x = 20 * Math.cos(this.angleRadians) + this.pos.x,
+		this.dir.y = -20 * Math.sin(this.angleRadians) + this.pos.y	
 	}
 
 	cast(wall) {
@@ -174,40 +224,38 @@ const wall = new Wall(300, 100, 300, 300);
 document.addEventListener("keydown", (e) => {
 	if (e.key === 'w')
 		player.moveForward()
-		//player.updatePosition(0, -10);
 	if (e.key === 's')
 		player.moveBack();
-		//player.updatePosition(0, 10);
 	if (e.key === 'd')
 		player.moveRight();
-		//player.updatePosition(10, 0);
 	if (e.key === 'a')
 		player.moveLeft();
-		//player.updatePosition(-10, 0);
-	if (e.key === 'ArrowUp')
+	if (e.key === 'ArrowLeft')
 		player.updateRays(10);
-	if (e.key === 'ArrowDown')
+	if (e.key === 'ArrowRight')
 		player.updateRays(-10);
-
 	renderScene();
 });
 
 const renderScene = function (){
 	const canvas = document.querySelector("#canvas");
 	const ctx = canvas.getContext("2d");
-	canvas.height = window.innerHeight;
-	canvas.width = window.innerWidth;
+	//canvas.height = window.innerHeight;
+	//canvas.width = window.innerWidth;
+	canvas.height = 1200;
+	canvas.width = 1200;
 
-	wall.show();
+	//wall.show();
 	player.show();
 
 	for (const ray of player.rays)
 	{
-		let intersectPoint = ray.cast(wall);
+		//let intersectPoint = ray.cast(wall);
 		/*if (intersectPoint) {
 			console.log(intersectPoint);
 		}*/
 	}
+	renderMap();
 }
 
 window.addEventListener("load", () => {
