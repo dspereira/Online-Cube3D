@@ -29,6 +29,32 @@ const map = [
 const RADIUS		= 20;
 const ANGLE_STEP	= 10;
 
+const MAP_HEIGHT	= 1200;
+const MAP_WIDTH		= 1200;
+
+const MAP_ROWS		= 24;
+const MAP_COLUMNS	= 24;
+
+// usage example: getPosMap({x:100, y:100});
+// return obj = {i: 10, j: 5}
+const getMapPos = function(x, y) {
+	const mapStep = MAP_WIDTH / MAP_COLUMNS;
+
+	return {
+		i: Math.floor(y / mapStep),
+		j: Math.floor(x / mapStep)
+	}
+}
+
+const getCanvasPos = function(i, j) {
+	const mapStep = MAP_WIDTH / MAP_COLUMNS;
+
+	return {
+		x: j * mapStep,
+		y: i * mapStep
+	}
+}
+
 // usage example: drawLine({x:100, y:100}, {x:200, y:100});
 const drawLine = function (startPoint, endPoint)
 {
@@ -145,7 +171,7 @@ class Ray {
 
 	updateDir(angle){
 		this.angleDegree += angle;
-		if (this.angleDegree <= 0)
+		if (this.angleDegree < 0)
 			this.angleDegree += 360;
 		else if (this.angleDegree >= 360)
 			this.angleDegree -= 360;
@@ -154,6 +180,34 @@ class Ray {
 		this.slop = slopCalc(this.pos, this.dir);
 	}
 	
+	cast1() {
+		let x = this.pos.x;
+		let y = this.pos.y;
+		let mPos;
+		let cPos;
+
+		if (this.angleDegree == 0) {
+			mPos = getMapPos(x, y);
+			while (!map[mPos.i][mPos.j]) {
+				mPos.j++;
+			}
+			cPos = getCanvasPos(mPos.i, mPos.j);
+			return {
+				x: cPos.x,
+				y: this.pos.y
+			}
+		}
+		
+		/*
+		if (this.angleDegree == 180) {
+			console.log("---180 dregees---");
+			// decrementar x no mapa
+		}
+		*/
+		return ;
+	}
+
+
 	cast(wall) {
 
 		let intersectPoint;
@@ -245,7 +299,7 @@ class Player {
 	}
 };
 
-const player = new Player(100, 100);
+const player = new Player(100, 120);
 const wall = new Wall(300, 100, 300, 300);
 
 document.addEventListener("keydown", (e) => {
@@ -267,20 +321,19 @@ document.addEventListener("keydown", (e) => {
 const renderScene = function (){
 	const canvas = document.querySelector("#canvas");
 	const ctx = canvas.getContext("2d");
-	//canvas.height = window.innerHeight;
-	//canvas.width = window.innerWidth;
-	canvas.height = 1200;
-	canvas.width = 1200;
+	canvas.height = MAP_HEIGHT;
+	canvas.width = MAP_WIDTH;
 
 	//wall.show();
 	player.show();
 
 	for (const ray of player.rays)
 	{
-		//let intersectPoint = ray.cast(wall);
-		/*if (intersectPoint) {
+		let intersectPoint = ray.cast1();
+		if (intersectPoint) {
+			drawLine(ray.pos, intersectPoint);
 			console.log(intersectPoint);
-		}*/
+		}
 	}
 	renderMap();
 }
