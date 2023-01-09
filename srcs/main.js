@@ -26,6 +26,9 @@ const map = [
 	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ];
 
+const RADIUS		= 20;
+const ANGLE_STEP	= 10;
+
 // usage example: drawLine({x:100, y:100}, {x:200, y:100});
 const drawLine = function (startPoint, endPoint)
 {
@@ -33,6 +36,7 @@ const drawLine = function (startPoint, endPoint)
 	const ctx = canvas.getContext("2d");
 	ctx.beginPath();
 	ctx.lineWidth = 1;
+	ctx.strokeStyle = "#FF8A80";
 	ctx.moveTo(startPoint.x, startPoint.y);
 	ctx.lineTo(endPoint.x, endPoint.y);
 	ctx.stroke();
@@ -45,6 +49,7 @@ const drawPoint = function (position)
 	const ctx = canvas.getContext("2d");
 	ctx.lineWidth = 25;
 	ctx.lineCap = "round";
+	ctx.strokeStyle = "#E53935";
 	ctx.beginPath();
 	ctx.moveTo(position.x, position.y);
 	ctx.lineTo(position.x, position.y);
@@ -53,8 +58,8 @@ const drawPoint = function (position)
 
 const drawWall = function(x, y, size) {
 	const ctx = canvas.getContext("2d");
+	ctx.fillStyle = "#2962FF";
 	ctx.fillRect(x, y, size, size);
-
 }
 
 const renderMap = function()
@@ -69,8 +74,23 @@ const renderMap = function()
 		}
 		x = 0;
 		y += 50;
-		console.log('');
 	}
+}
+
+const degreeToRadian = function(degree){
+	return (0.0174532925 * degree);
+}
+
+// usage example: slopCalc({x:100, y:100}, {x:200, y:100});
+const slopCalc = function(p1, p2) {
+	const y = p2.y - p1.y;
+	const x = p2.x - p1.x;
+
+	if (!y)
+		return 0;
+	if (!x)
+		return 1000;
+	return (y / x);
 }
 
 class Wall {
@@ -84,8 +104,14 @@ class Wall {
 	}
 };
 
-const degreeToRadian = function(degree){
-	return (0.0174532925 * degree);
+// usage example: getPosObjXY({x:100, y:100}, 45);
+//example return: obj = {x: 10, y: 10}
+const getPosObjXY = function (pos, angleDegree){
+	const radians = degreeToRadian(angleDegree);
+	return {
+		x: Math.round(RADIUS * Math.cos(radians) + pos.x),
+		y: Math.round(-RADIUS * Math.sin(radians) + pos.y)
+	};
 }
 
 class Ray {
@@ -93,29 +119,41 @@ class Ray {
 		this.pos = {x: x, y: y};
 		this.angleDegree = angleDegree;
 		this.angleRadians = degreeToRadian(angleDegree);
-		this.dir = {
-			x: 10 * Math.cos(this.angleRadians) + this.pos.x,
-			y: -10 * Math.sin(this.angleRadians) + this.pos.y
-		};
+		this.dir = getPosObjXY(this.pos, angleDegree);
+		this.slop = slopCalc(this.pos, this.dir);
 	}
 
 	show() {
+		console.log("####################");
+		console.log("angle:", this.angleDegree, "slop:", this.slop)
+		console.log("pos: ", "x:", this.pos.x, "y:", this.pos.y);
+		console.log("dir: ", "x:", this.dir.x, "y:", this.dir.y);
 		drawLine(this.pos, this.dir);
 	}
 
+	// DEPRECATED
 	update(x, y) {
 		this.pos.x += x;
 		this.pos.y += y;
-		this.dir.x = 20 * Math.cos(this.angleRadians) + this.pos.x,
-		this.dir.y = -20 * Math.sin(this.angleRadians) + this.pos.y	
+		this.dir = getPosObjXY(this.pos, this.angleDegree);
+	}
+
+	updatePos(pos) {
+		this.pos = pos;
+		this.dir = getPosObjXY(this.pos, this.angleDegree);
 	}
 
 	updateDir(angle){
-		this.angleRadians += degreeToRadian(angle);
-		this.dir.x = 20 * Math.cos(this.angleRadians) + this.pos.x,
-		this.dir.y = -20 * Math.sin(this.angleRadians) + this.pos.y	
+		this.angleDegree += angle;
+		if (this.angleDegree <= 0)
+			this.angleDegree += 360;
+		else if (this.angleDegree >= 360)
+			this.angleDegree -= 360;
+		this.angleRadians = degreeToRadian(this.angleDegree);
+		this.dir = getPosObjXY(this.pos, this.angleDegree);
+		this.slop = slopCalc(this.pos, this.dir);
 	}
-
+	
 	cast(wall) {
 
 		let intersectPoint;
@@ -153,56 +191,45 @@ class Player {
 	constructor (x, y) {
 		this.pos = {x: x, y: y};
 		this.rays = [];
-		for (let i = 0; i <= 45; i++)
+		this.rays.push(new Ray(x, y, 0));
+		/*for (let i = 0; i <= 45; i++)
 			this.rays.push(new Ray(x, y, i));
 		for (let i = 314; i <= 359; i++)
 			this.rays.push(new Ray(x, y, i));
+		*/
 	}
 
-	updatePosition(x, y) {
-		this.pos.x += x;
-		this.pos.y += y;
+	updateRaysPos() {
 		for (let i = 0; i < this.rays.length; i++)
-			this.rays[i].update(x, y);
+			this.rays[i].updatePos(this.pos);
 	}
 
 	moveForward() {
 		const ray = this.rays[0];
-		let x = Math.cos(ray.angleRadians) * 10;
-		let y = -Math.sin(ray.angleRadians) * 10;
-		this.updatePosition(x, y);
-	}
 
-	moveUp() {
-		const ray = this.rays[0];
-		let x = Math.cos(ray.angleRadians) * 10;
-		let y = -Math.sin(ray.angleRadians) * 10;
-
-		this.updatePosition(x, y);
+		this.pos = getPosObjXY(this.pos, ray.angleDegree);
+		this.updateRaysPos();
 	}
 
 	moveBack() {
 		const ray = this.rays[0];
-		let x = Math.cos(ray.angleRadians) * -10;
-		let y = -Math.sin(ray.angleRadians) * -10;
 
-		this.updatePosition(x, y);
+		this.pos = getPosObjXY(this.pos, ray.angleDegree - 180);
+		this.updateRaysPos();
 	}
 
 	moveRight() {
 		const ray = this.rays[0];
-		let x = Math.cos(ray.angleRadians - degreeToRadian(-90)) * -10;
-		let y = -Math.sin(ray.angleRadians - degreeToRadian(-90)) * -10;
 
-		this.updatePosition(x, y);
+		this.pos = getPosObjXY(this.pos, ray.angleDegree - 90);
+		this.updateRaysPos();
 	}
 
 	moveLeft() {
 		const ray = this.rays[0];
-		let x = Math.cos(ray.angleRadians - degreeToRadian(90)) * -10;
-		let y = -Math.sin(ray.angleRadians - degreeToRadian(90)) * -10;
 
-		this.updatePosition(x, y);
+		this.pos = getPosObjXY(this.pos, ray.angleDegree + 90);
+		this.updateRaysPos();
 	}
 
 	updateRays(dir) {
@@ -231,9 +258,9 @@ document.addEventListener("keydown", (e) => {
 	if (e.key === 'a')
 		player.moveLeft();
 	if (e.key === 'ArrowLeft')
-		player.updateRays(10);
+		player.updateRays(ANGLE_STEP);
 	if (e.key === 'ArrowRight')
-		player.updateRays(-10);
+		player.updateRays(-ANGLE_STEP);
 	renderScene();
 });
 
