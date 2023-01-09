@@ -197,13 +197,86 @@ class Ray {
 				y: this.pos.y
 			}
 		}
-		
-		/*
-		if (this.angleDegree == 180) {
-			console.log("---180 dregees---");
-			// decrementar x no mapa
+		else if (this.angleDegree == 180) {
+			mPos = getMapPos(x, y);
+			while (!map[mPos.i][mPos.j]) {
+				mPos.j--;
+			}
+			cPos = getCanvasPos(mPos.i, mPos.j);
+			return {
+				x: cPos.x,
+				y: this.pos.y
+			}
 		}
-		*/
+		else if (this.angleDegree == 90)
+		{
+			mPos = getMapPos(x, y);
+			while (!map[mPos.i][mPos.j]) {
+				mPos.i--;
+			}
+			cPos = getCanvasPos(mPos.i, mPos.j);
+			return {
+				x: this.pos.x,
+				y: cPos.y
+			}		
+		}
+		else if (this.angleDegree == 270)
+		{
+			mPos = getMapPos(x, y);
+			while (!map[mPos.i][mPos.j]) {
+				mPos.i++;
+			}
+			cPos = getCanvasPos(mPos.i, mPos.j);
+			return {
+				x: this.pos.x,
+				y: cPos.y
+			}		
+		}
+		else if (this.slop > 0 && this.slop < 1){
+			// i y
+			// j x
+			mPos = getMapPos(x, y);
+			while (!map[Math.round(mPos.i)][mPos.j]) {
+				mPos.j++
+				mPos.i += this.slop;
+			}
+			cPos = getCanvasPos(Math.round(mPos.i), mPos.j);
+			console.log("m > 0 && m < 1");
+			console.log(cPos);
+
+			const wall1 = new Wall(cPos.x, cPos.y, cPos.x + 50, cPos.y);
+			const wall2 = new Wall(cPos.x, cPos.y, cPos.x, cPos.y + 50);
+
+			const pt1 = this.cast(wall1);
+			const pt2 = this.cast(wall2);
+			if (pt1)
+				return pt1;
+			else
+				return pt2;
+		}
+		else if (this.slop > 1){
+			// i y
+			// j x
+			mPos = getMapPos(x, y);
+			while (!map[mPos.i][Math.round(mPos.j)]) {
+				mPos.j += (1 / this.slop);
+				mPos.i++;
+			}
+			cPos = getCanvasPos(mPos.i, Math.round(mPos.j));
+			console.log("m > 0 && m > 1");
+			console.log(cPos);
+
+			const wall1 = new Wall(cPos.x, cPos.y, cPos.x + 50, cPos.y);
+			const wall2 = new Wall(cPos.x, cPos.y, cPos.x, cPos.y + 50);
+
+			const pt1 = this.cast(wall1);
+			const pt2 = this.cast(wall2);
+			if (pt1)
+				return pt1;
+			else
+				return pt2;
+		}
+
 		return ;
 	}
 
@@ -245,12 +318,12 @@ class Player {
 	constructor (x, y) {
 		this.pos = {x: x, y: y};
 		this.rays = [];
-		this.rays.push(new Ray(x, y, 0));
-		/*for (let i = 0; i <= 45; i++)
+		//this.rays.push(new Ray(x, y, 0));
+		for (let i = 0; i <= 45; i++)
 			this.rays.push(new Ray(x, y, i));
 		for (let i = 314; i <= 359; i++)
 			this.rays.push(new Ray(x, y, i));
-		*/
+		
 	}
 
 	updateRaysPos() {
