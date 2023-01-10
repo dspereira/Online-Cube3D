@@ -26,8 +26,8 @@ const map = [
 	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ];
 
-const RADIUS		= 20;
-const ANGLE_STEP	= 10;
+const RADIUS		= 50;
+const ANGLE_STEP	= 1;
 
 const MAP_HEIGHT	= 1200;
 const MAP_WIDTH		= 1200;
@@ -88,6 +88,13 @@ const drawWall = function(x, y, size) {
 	ctx.fillRect(x, y, size, size);
 }
 
+const drawSquare = function(x, y, size) {
+	const ctx = canvas.getContext("2d");
+	ctx.fillStyle = "#eeeee4";
+	ctx.strokeStyle = "black";
+	ctx.strokeRect(x, y, size, size);
+}
+
 const renderMap = function()
 {
 	let x = 0;
@@ -96,6 +103,8 @@ const renderMap = function()
 		for (const elm of line) {
 			if (elm)
 				drawWall(x, y, 50);
+			else 
+				drawSquare(x, y, 50);
 			x += 50;
 		}
 		x = 0;
@@ -158,11 +167,11 @@ class Ray {
 	}
 
 	// DEPRECATED
-	update(x, y) {
+	/*update(x, y) {
 		this.pos.x += x;
 		this.pos.y += y;
 		this.dir = getPosObjXY(this.pos, this.angleDegree);
-	}
+	}*/
 
 	updatePos(pos) {
 		this.pos = pos;
@@ -185,6 +194,9 @@ class Ray {
 		let y = this.pos.y;
 		let mPos;
 		let cPos;
+		/*console.log("antes:", this.slop);
+		this.slop = slopCalc(this.dir, this.pos);
+		console.log("depois:", this.slop);*/
 
 		if (this.angleDegree == 0) {
 			mPos = getMapPos(x, y);
@@ -239,10 +251,14 @@ class Ray {
 			while (!map[Math.round(mPos.i)][mPos.j]) {
 				mPos.j++
 				mPos.i += this.slop;
+				//mPos.i += (1 / this.slop);
+				console.log("pos map:", mPos);
+				//console.log("teste:", this.slop);
 			}
 			cPos = getCanvasPos(Math.round(mPos.i), mPos.j);
 			console.log("m > 0 && m < 1");
-			console.log(cPos);
+			console.log("pos map:", mPos);
+			console.log("pos canvas:",cPos);
 
 			const wall1 = new Wall(cPos.x, cPos.y, cPos.x + 50, cPos.y);
 			const wall2 = new Wall(cPos.x, cPos.y, cPos.x, cPos.y + 50);
@@ -261,10 +277,12 @@ class Ray {
 			while (!map[mPos.i][Math.round(mPos.j)]) {
 				mPos.j += (1 / this.slop);
 				mPos.i++;
+				console.log("pos map:", mPos);
 			}
 			cPos = getCanvasPos(mPos.i, Math.round(mPos.j));
 			console.log("m > 0 && m > 1");
-			console.log(cPos);
+			console.log("pos map:", mPos);
+			console.log("pos canvas:",cPos);
 
 			const wall1 = new Wall(cPos.x, cPos.y, cPos.x + 50, cPos.y);
 			const wall2 = new Wall(cPos.x, cPos.y, cPos.x, cPos.y + 50);
@@ -318,12 +336,13 @@ class Player {
 	constructor (x, y) {
 		this.pos = {x: x, y: y};
 		this.rays = [];
-		//this.rays.push(new Ray(x, y, 0));
-		for (let i = 0; i <= 45; i++)
+		this.rays.push(new Ray(x, y, 0));
+		/*for (let i = 0; i <= 45; i++)
 			this.rays.push(new Ray(x, y, i));
 		for (let i = 314; i <= 359; i++)
 			this.rays.push(new Ray(x, y, i));
 		
+		*/
 	}
 
 	updateRaysPos() {
@@ -405,7 +424,7 @@ const renderScene = function (){
 		let intersectPoint = ray.cast1();
 		if (intersectPoint) {
 			drawLine(ray.pos, intersectPoint);
-			console.log(intersectPoint);
+			//console.log(intersectPoint);
 		}
 	}
 	renderMap();
