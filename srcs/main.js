@@ -189,6 +189,23 @@ class Ray {
 		this.slop = slopCalc(this.pos, this.dir);
 	}
 	
+	cast2() {
+		let mPos;
+		let cPos;
+		
+		if (this.angleDegree >= 0 && this.angleDegree <= 90){
+			mPos = getMapPos(this.pos.x, this.pos.y);
+			cPos = getCanvasPos(mPos.i, mPos.j);
+			let x = cPos.x + 50;
+			let y = cPos.y;
+
+			//verificar a distancia quando o x = cPos.x + 50
+			//verificar a distancia quando o y = cPos.y
+			// usar equacoes da trigonometria e verificar qual ponto est'a mais longe
+
+		}
+	}
+
 	cast1() {
 		let x = this.pos.x;
 		let y = this.pos.y;
@@ -252,7 +269,7 @@ class Ray {
 				mPos.j++
 				mPos.i += this.slop;
 				//mPos.i += (1 / this.slop);
-				console.log("pos map:", mPos);
+				//console.log("pos map:", mPos);
 				//console.log("teste:", this.slop);
 			}
 			cPos = getCanvasPos(Math.round(mPos.i), mPos.j);
@@ -297,7 +314,6 @@ class Ray {
 
 		return ;
 	}
-
 
 	cast(wall) {
 
@@ -391,7 +407,7 @@ class Player {
 	}
 };
 
-const player = new Player(100, 120);
+const player = new Player(100, 100);
 const wall = new Wall(300, 100, 300, 300);
 
 document.addEventListener("keydown", (e) => {
@@ -421,7 +437,7 @@ const renderScene = function (){
 
 	for (const ray of player.rays)
 	{
-		let intersectPoint = ray.cast1();
+		let intersectPoint = ray.cast2();
 		if (intersectPoint) {
 			drawLine(ray.pos, intersectPoint);
 			//console.log(intersectPoint);
