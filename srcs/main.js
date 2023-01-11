@@ -84,14 +84,26 @@ const getIntersectPoint = function(side, startPos, slop, mapPos) {
 
 	if (side == 1)
 	{
-		finalY = canvasPos.y;
-		finalX = (finalY - b) / m;
-	}
-	else if (side == 0)
-	{
 		finalX = canvasPos.x;
 		finalY = (m * finalX) + b;
 	}
+	else if (side == 2)
+	{
+		finalY = canvasPos.y;
+		finalX = (finalY - b) / m;
+	}
+	else if (side == -2)
+	{
+		finalX = canvasPos.x + 50;
+		finalY = (m * finalX) + b;
+	}
+	else if (side == -1)
+	{
+		finalY = canvasPos.y + 50;
+		finalX = (finalY - b) / m;
+	}
+
+
 
 	//console.log("finalX:", finalX);
 	//console.log("finalX:", finalY);
@@ -161,6 +173,7 @@ const renderMap = function()
 const degreeToRadian = function(degree){
 	return (0.0174532925 * degree);
 }
+
 
 // usage example: slopCalc({x:100, y:100}, {x:200, y:100});
 const slopCalc = function(p1, p2) {
@@ -233,12 +246,10 @@ const getPosObjXY = function (pos, angleDegree){
 const getPosObjXYRad = function (pos, angleDegree, rad){
 	const radians = degreeToRadian(angleDegree);
 	return {
-		x: Math.round(RADIUS * Math.cos(radians) + pos.x),
-		y: Math.round(-RADIUS * Math.sin(radians) + pos.y)
+		x: Math.round(rad * Math.cos(radians) + pos.x),
+		y: Math.round(-rad * Math.sin(radians) + pos.y)
 	};
 }
-
-
 
 const wall1 = new Wall(0, 0, 1200, 0);
 const wall2 = new Wall(0, 0, 0, 1200);
@@ -287,8 +298,15 @@ class Ray {
 	
 	cast2()
 	{
-		const slopX = slopCalc(this.pos, this.dir);
-		const slopY = slopCalc1(this.pos, this.dir);
+		//const slopX = slopCalc(this.pos, this.dir);
+		//const slopY = slopCalc1(this.pos, this.dir);
+
+		const slopX = slopCalc(this.pos, getPosObjXYRad(this.pos, this.angleDegree, 1000));
+		const slopY = slopCalc1(this.pos, getPosObjXYRad(this.pos, this.angleDegree, 1000));
+		this.slop = slopCalc(this.pos, getPosObjXYRad(this.pos, this.angleDegree, 1000));
+
+		console.log("SLOP:", this.slop);
+
 		const sX = Math.sqrt(1 + slopX * slopX);
 		const sY = Math.sqrt(1 + slopY * slopY);
 		let stepX;
@@ -343,12 +361,12 @@ class Ray {
 			if (rayLengthX < rayLengthY){
 				mapPos.x += stepX;
 				rayLengthX += sX;
-				side = 0;
+				side = 1 * stepX;
 			}
 			else {
 				mapPos.y += stepY;
 				rayLengthY += sY;
-				side = 1;			
+				side = 2 * stepY;			
 			}
 			console.log("mapPos:",mapPos);
 
