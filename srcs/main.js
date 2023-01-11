@@ -27,7 +27,7 @@ const map = [
 ];
 
 const RADIUS		= 20;
-const ANGLE_STEP	= 1;
+const ANGLE_STEP	= 10;
 
 const MAP_HEIGHT	= 1200;
 const MAP_WIDTH		= 1200;
@@ -78,9 +78,7 @@ const getIntersectPoint = function(side, startPos, slop, mapPos) {
 	let finalX;
 	let finalY;
 
-	//console.log("mapPos:", mapPos);
 	let canvasPos = getCanvasPos(mapPos.i, mapPos.j);
-	//console.log("canvasPos:", canvasPos);
 
 	if (side == 1)
 	{
@@ -94,16 +92,14 @@ const getIntersectPoint = function(side, startPos, slop, mapPos) {
 	}
 	else if (side == -2)
 	{
-		finalX = canvasPos.x + 50;
-		finalY = (m * finalX) + b;
-	}
-	else if (side == -1)
-	{
 		finalY = canvasPos.y + 50;
 		finalX = (finalY - b) / m;
 	}
-
-
+	else if (side == -1)
+	{
+		finalX = canvasPos.x + 50;
+		finalY = (m * finalX) + b;
+	}
 
 	//console.log("finalX:", finalX);
 	//console.log("finalX:", finalY);
@@ -182,11 +178,11 @@ const slopCalc = function(p1, p2) {
 	let signal = 1;
 	let res;
 
-	if (y < 0 || x < 0)
-		signal = -1;
+	//if (y < 0 || x < 0)
+	//	signal = -1;
 	res = y / x;
-	if (signal < 0 && res > 0)
-		res *= signal;
+	//if (signal < 0 && res > 0)
+	//	res *= signal;
 
 	if (!y)
 		return 0;
@@ -208,12 +204,12 @@ const slopCalc1 = function(p1, p2) {
 	let signal = 1;
 	let res;
 
-	if (y < 0 || x < 0)
-		signal = -1;
+	//if (y < 0 || x < 0)
+	//	signal = -1;
 
 	res = x / y;
-	if (signal < 0 && res > 0)
-		res *= signal;
+	//if (signal < 0 && res > 0)
+	//	res *= signal;
 	
 	if (!y)
 		return 0;
@@ -273,13 +269,6 @@ class Ray {
 		drawLine(this.pos, this.dir);
 	}
 
-	// DEPRECATED
-	/*update(x, y) {
-		this.pos.x += x;
-		this.pos.y += y;
-		this.dir = getPosObjXY(this.pos, this.angleDegree);
-	}*/
-
 	updatePos(pos) {
 		this.pos = pos;
 		this.dir = getPosObjXY(this.pos, this.angleDegree);
@@ -298,9 +287,6 @@ class Ray {
 	
 	cast2()
 	{
-		//const slopX = slopCalc(this.pos, this.dir);
-		//const slopY = slopCalc1(this.pos, this.dir);
-
 		const slopX = slopCalc(this.pos, getPosObjXYRad(this.pos, this.angleDegree, 1000));
 		const slopY = slopCalc1(this.pos, getPosObjXYRad(this.pos, this.angleDegree, 1000));
 		this.slop = slopCalc(this.pos, getPosObjXYRad(this.pos, this.angleDegree, 1000));
@@ -314,9 +300,6 @@ class Ray {
 
 		let rayLengthX;
 		let rayLengthY;
-
-
-		//console.log(sX, sY);
 
 		let mPos = getMapPos(this.pos.x, this.pos.y);
 		let rPos = getMapPosRaw(this.pos.x, this.pos.y);
@@ -388,65 +371,22 @@ class Ray {
 
 		return ;
 
-
-		//let cPos = getCanvasPos(mapPos.x, mapPos.y);
-
-		/*const wall1 = new Wall(cPos.x, cPos.y, cPos.x + 50, cPos.y);
-		const wall2 = new Wall(cPos.x, cPos.y, cPos.x, cPos.y + 50);
-
-		const pt1 = this.cast(wall1);
-		const pt2 = this.cast(wall2);
-		if (pt1)
-			return pt1;
-		else
-			return pt2;*/
-
 	}
-
-	cast(wall) {
-
-		let intersectPoint;
-
-		const x1 = wall.sPoint.x;
-		const y1 = wall.sPoint.y;
-		const x2 = wall.ePoint.x;
-		const y2 = wall.ePoint.y;
-
-		const x3 = this.pos.x;
-		const y3 = this.pos.y;
-		const x4 = this.dir.x;
-		const y4 = this.dir.y;
-
-		const den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-		if (!den)
-			return ;
-
-		const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
-		const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
-		if (t > 0 && t < 1 && u > 0) {
-			intersectPoint = {
-				x: x1 + t * (x2 - x1), 
-				y: y1 + t * (y2 - y1)	
-			}
-			//drawLine(this.pos, intersectPoint);
-			return intersectPoint;
-		}
-		else 
-			return ;
-	}
+	
 };
 
 class Player {
 	constructor (x, y) {
 		this.pos = {x: x, y: y};
 		this.rays = [];
-		this.rays.push(new Ray(x, y, 0));
+		//this.rays.push(new Ray(x, y, 0));
 		/*for (let i = 0; i <= 45; i++)
 			this.rays.push(new Ray(x, y, i));
 		for (let i = 314; i <= 359; i++)
+			this.rays.push(new Ray(x, y, i));*/
+
+		for (let i = 0; i <= 45; i += 0.5)
 			this.rays.push(new Ray(x, y, i));
-			*/
-		
 		
 	}
 
@@ -499,7 +439,7 @@ class Player {
 const player = new Player(100, 100);
 const wall = new Wall(300, 100, 300, 300);
 
-document.addEventListener("keydown", (e) => {
+document.addEventListener("keyup", (e) => {
 	if (e.key === 'w')
 		player.moveForward()
 	if (e.key === 's')
