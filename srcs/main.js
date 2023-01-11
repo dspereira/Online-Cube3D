@@ -26,7 +26,7 @@ const map = [
 	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ];
 
-const RADIUS		= 50;
+const RADIUS		= 20;
 const ANGLE_STEP	= 1;
 
 const MAP_HEIGHT	= 1200;
@@ -46,6 +46,15 @@ const getMapPos = function(x, y) {
 	}
 }
 
+const getMapPosRaw = function(x, y) {
+	const mapStep = MAP_WIDTH / MAP_COLUMNS;
+
+	return {
+		i: y / mapStep,
+		j: x / mapStep
+	}
+}
+
 const getCanvasPos = function(i, j) {
 	const mapStep = MAP_WIDTH / MAP_COLUMNS;
 
@@ -53,6 +62,43 @@ const getCanvasPos = function(i, j) {
 		x: j * mapStep,
 		y: i * mapStep
 	}
+}
+
+const getIntersectPoint = function(side, startPos, slop, mapPos) {
+
+	// y = mx+b
+	// x = (y-b)/m
+	// b = y-mx
+
+	const m = slop;
+	const b = startPos.y - (m * startPos.x);
+	/*console.log("startPos.y:", startPos.y);
+	console.log("m:", m);
+	console.log("b:", b);*/
+	let finalX;
+	let finalY;
+
+	//console.log("mapPos:", mapPos);
+	let canvasPos = getCanvasPos(mapPos.i, mapPos.j);
+	//console.log("canvasPos:", canvasPos);
+
+	if (side == 1)
+	{
+		finalY = canvasPos.y;
+		finalX = (finalY - b) / m;
+	}
+	else if (side == 0)
+	{
+		finalX = canvasPos.x;
+		finalY = (m * finalX) + b;
+	}
+
+	//console.log("finalX:", finalX);
+	//console.log("finalX:", finalY);
+	return {
+		x: finalX,
+		y: finalY
+	};
 }
 
 // usage example: drawLine({x:100, y:100}, {x:200, y:100});
@@ -120,12 +166,47 @@ const degreeToRadian = function(degree){
 const slopCalc = function(p1, p2) {
 	const y = p2.y - p1.y;
 	const x = p2.x - p1.x;
+	let signal = 1;
+	let res;
+
+	if (y < 0 || x < 0)
+		signal = -1;
+	res = y / x;
+	if (signal < 0 && res > 0)
+		res *= signal;
 
 	if (!y)
 		return 0;
 	if (!x)
 		return 1000;
-	return (y / x);
+	return (res);
+}
+
+const getDir = function(p1, p2) {
+	return {
+		x: p2.x - p1.x,
+		y: p2.y - p1.y
+	}
+}
+
+const slopCalc1 = function(p1, p2) {
+	const y = p2.y - p1.y;
+	const x = p2.x - p1.x;
+	let signal = 1;
+	let res;
+
+	if (y < 0 || x < 0)
+		signal = -1;
+
+	res = x / y;
+	if (signal < 0 && res > 0)
+		res *= signal;
+	
+	if (!y)
+		return 0;
+	if (!x)
+		return 1000;
+	return (res);
 }
 
 class Wall {
@@ -148,6 +229,21 @@ const getPosObjXY = function (pos, angleDegree){
 		y: Math.round(-RADIUS * Math.sin(radians) + pos.y)
 	};
 }
+
+const getPosObjXYRad = function (pos, angleDegree, rad){
+	const radians = degreeToRadian(angleDegree);
+	return {
+		x: Math.round(RADIUS * Math.cos(radians) + pos.x),
+		y: Math.round(-RADIUS * Math.sin(radians) + pos.y)
+	};
+}
+
+
+
+const wall1 = new Wall(0, 0, 1200, 0);
+const wall2 = new Wall(0, 0, 0, 1200);
+const wall3 = new Wall(0, 1200, 1200, 1200);
+const wall4 = new Wall(1200, 0, 1200, 1200);
 
 class Ray {
 	constructor(x, y, angleDegree) {
@@ -189,130 +285,104 @@ class Ray {
 		this.slop = slopCalc(this.pos, this.dir);
 	}
 	
-	cast2() {
-		let mPos;
-		let cPos;
+	cast2()
+	{
+		const slopX = slopCalc(this.pos, this.dir);
+		const slopY = slopCalc1(this.pos, this.dir);
+		const sX = Math.sqrt(1 + slopX * slopX);
+		const sY = Math.sqrt(1 + slopY * slopY);
+		let stepX;
+		let stepY;
+
+		let rayLengthX;
+		let rayLengthY;
+
+
+		//console.log(sX, sY);
+
+		let mPos = getMapPos(this.pos.x, this.pos.y);
+		let rPos = getMapPosRaw(this.pos.x, this.pos.y);
+
+		let mapPos = {
+			x: mPos.j,
+			y: mPos.i
+		}
+
+		let rayPos = {
+			x: rPos.j,
+			y: rPos.i
+		}
+		// j = x
+		// i = x
+
+		const rayDir = getDir(this.pos, this.dir);
+
+		if (rayDir.x < 0) {
+			stepX = -1;
+			rayLengthX = (rayPos.x - mapPos.x) * sX;
+		}
+		else {
+			stepX = 1;
+			rayLengthX = ((mapPos.x + 1) - rayPos.x) * sX;
+		}
+		if (rayDir.y < 0) {
+			stepY = -1;
+			rayLengthY = (rayPos.y - mapPos.y) * sY;
+		}
+		else {
+			stepY = 1;
+			rayLengthY = ((mapPos.y + 1) - rayPos.y) * sY;
+		}
+
+		console.log("length: ", "x:", rayLengthX, "y:", rayLengthY);
+
+		let side;
+		let hitWall = false;
+		while (!hitWall)
+		{
+			if (rayLengthX < rayLengthY){
+				mapPos.x += stepX;
+				rayLengthX += sX;
+				side = 0;
+			}
+			else {
+				mapPos.y += stepY;
+				rayLengthY += sY;
+				side = 1;			
+			}
+			console.log("mapPos:",mapPos);
+
+			if (map[mapPos.y][mapPos.x])
+				hitWall = true;
+		}
+		console.log("side:", side);
+		console.log("posicao:", mapPos);
+
+		let pt = getIntersectPoint(side, this.pos, this.slop, {i: mapPos.y, j: mapPos.x});
 		
-		if (this.angleDegree >= 0 && this.angleDegree <= 90){
-			mPos = getMapPos(this.pos.x, this.pos.y);
-			cPos = getCanvasPos(mPos.i, mPos.j);
-			let x = cPos.x + 50;
-			let y = cPos.y;
 
-			//verificar a distancia quando o x = cPos.x + 50
-			//verificar a distancia quando o y = cPos.y
-			// usar equacoes da trigonometria e verificar qual ponto est'a mais longe
+		pt.x = Math.round(pt.x);
+		pt.y = Math.round(pt.y);
 
-		}
-	}
+		console.log("Intersect Point: ", pt);
 
-	cast1() {
-		let x = this.pos.x;
-		let y = this.pos.y;
-		let mPos;
-		let cPos;
-		/*console.log("antes:", this.slop);
-		this.slop = slopCalc(this.dir, this.pos);
-		console.log("depois:", this.slop);*/
-
-		if (this.angleDegree == 0) {
-			mPos = getMapPos(x, y);
-			while (!map[mPos.i][mPos.j]) {
-				mPos.j++;
-			}
-			cPos = getCanvasPos(mPos.i, mPos.j);
-			return {
-				x: cPos.x,
-				y: this.pos.y
-			}
-		}
-		else if (this.angleDegree == 180) {
-			mPos = getMapPos(x, y);
-			while (!map[mPos.i][mPos.j]) {
-				mPos.j--;
-			}
-			cPos = getCanvasPos(mPos.i, mPos.j);
-			return {
-				x: cPos.x,
-				y: this.pos.y
-			}
-		}
-		else if (this.angleDegree == 90)
-		{
-			mPos = getMapPos(x, y);
-			while (!map[mPos.i][mPos.j]) {
-				mPos.i--;
-			}
-			cPos = getCanvasPos(mPos.i, mPos.j);
-			return {
-				x: this.pos.x,
-				y: cPos.y
-			}		
-		}
-		else if (this.angleDegree == 270)
-		{
-			mPos = getMapPos(x, y);
-			while (!map[mPos.i][mPos.j]) {
-				mPos.i++;
-			}
-			cPos = getCanvasPos(mPos.i, mPos.j);
-			return {
-				x: this.pos.x,
-				y: cPos.y
-			}		
-		}
-		else if (this.slop > 0 && this.slop < 1){
-			// i y
-			// j x
-			mPos = getMapPos(x, y);
-			while (!map[Math.round(mPos.i)][mPos.j]) {
-				mPos.j++
-				mPos.i += this.slop;
-				//mPos.i += (1 / this.slop);
-				//console.log("pos map:", mPos);
-				//console.log("teste:", this.slop);
-			}
-			cPos = getCanvasPos(Math.round(mPos.i), mPos.j);
-			console.log("m > 0 && m < 1");
-			console.log("pos map:", mPos);
-			console.log("pos canvas:",cPos);
-
-			const wall1 = new Wall(cPos.x, cPos.y, cPos.x + 50, cPos.y);
-			const wall2 = new Wall(cPos.x, cPos.y, cPos.x, cPos.y + 50);
-
-			const pt1 = this.cast(wall1);
-			const pt2 = this.cast(wall2);
-			if (pt1)
-				return pt1;
-			else
-				return pt2;
-		}
-		else if (this.slop > 1){
-			// i y
-			// j x
-			mPos = getMapPos(x, y);
-			while (!map[mPos.i][Math.round(mPos.j)]) {
-				mPos.j += (1 / this.slop);
-				mPos.i++;
-				console.log("pos map:", mPos);
-			}
-			cPos = getCanvasPos(mPos.i, Math.round(mPos.j));
-			console.log("m > 0 && m > 1");
-			console.log("pos map:", mPos);
-			console.log("pos canvas:",cPos);
-
-			const wall1 = new Wall(cPos.x, cPos.y, cPos.x + 50, cPos.y);
-			const wall2 = new Wall(cPos.x, cPos.y, cPos.x, cPos.y + 50);
-
-			const pt1 = this.cast(wall1);
-			const pt2 = this.cast(wall2);
-			if (pt1)
-				return pt1;
-			else
-				return pt2;
-		}
+		drawLine(this.pos, pt);
 
 		return ;
+
+
+		//let cPos = getCanvasPos(mapPos.x, mapPos.y);
+
+		/*const wall1 = new Wall(cPos.x, cPos.y, cPos.x + 50, cPos.y);
+		const wall2 = new Wall(cPos.x, cPos.y, cPos.x, cPos.y + 50);
+
+		const pt1 = this.cast(wall1);
+		const pt2 = this.cast(wall2);
+		if (pt1)
+			return pt1;
+		else
+			return pt2;*/
+
 	}
 
 	cast(wall) {
@@ -340,7 +410,7 @@ class Ray {
 				x: x1 + t * (x2 - x1), 
 				y: y1 + t * (y2 - y1)	
 			}
-			drawLine(this.pos, intersectPoint);
+			//drawLine(this.pos, intersectPoint);
 			return intersectPoint;
 		}
 		else 
@@ -357,8 +427,9 @@ class Player {
 			this.rays.push(new Ray(x, y, i));
 		for (let i = 314; i <= 359; i++)
 			this.rays.push(new Ray(x, y, i));
+			*/
 		
-		*/
+		
 	}
 
 	updateRaysPos() {
@@ -439,8 +510,8 @@ const renderScene = function (){
 	{
 		let intersectPoint = ray.cast2();
 		if (intersectPoint) {
-			drawLine(ray.pos, intersectPoint);
-			//console.log(intersectPoint);
+			//drawLine(ray.pos, intersectPoint);
+			//console.log("intersectPoint:", intersectPoint);
 		}
 	}
 	renderMap();
