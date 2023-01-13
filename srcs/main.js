@@ -1,3 +1,5 @@
+
+
 // 24x24
 const map = [  
 	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -110,7 +112,7 @@ const getIntersectPoint = function(side, startPos, slop, mapPos) {
 }
 
 // usage example: drawLine({x:100, y:100}, {x:200, y:100});
-const drawLine = function (startPoint, endPoint)
+/*const drawLine = function (startPoint, endPoint)
 {
 	const canvas = document.querySelector("#canvas");
 	const ctx = canvas.getContext("2d");
@@ -121,9 +123,10 @@ const drawLine = function (startPoint, endPoint)
 	ctx.lineTo(endPoint.x, endPoint.y);
 	ctx.stroke();
 }
+*/
 
 // usage example: drawPoint({x:100, y:100});
-const drawPoint = function (position)
+/*const drawPoint = function (position)
 {
 	const canvas = document.querySelector("#canvas");
 	const ctx = canvas.getContext("2d");
@@ -134,7 +137,7 @@ const drawPoint = function (position)
 	ctx.moveTo(position.x, position.y);
 	ctx.lineTo(position.x, position.y);
 	ctx.stroke();
-}
+}*/
 
 const drawWall = function(x, y, size) {
 	const ctx = canvas.getContext("2d");
@@ -166,9 +169,11 @@ const renderMap = function()
 	}
 }
 
+/*
 const degreeToRadian = function(degree){
 	return (0.0174532925 * degree);
 }
+*/
 
 
 // usage example: slopCalc({x:100, y:100}, {x:200, y:100});
@@ -231,7 +236,7 @@ class Wall {
 
 // usage example: getPosObjXY({x:100, y:100}, 45);
 //example return: obj = {x: 10, y: 10}
-const getPosObjXY = function (pos, angleDegree){
+/*const getPosObjXY = function (pos, angleDegree){
 	const radians = degreeToRadian(angleDegree);
 	return {
 		x: Math.round(RADIUS * Math.cos(radians) + pos.x),
@@ -245,7 +250,7 @@ const getPosObjXYRad = function (pos, angleDegree, rad){
 		x: Math.round(rad * Math.cos(radians) + pos.x),
 		y: Math.round(-rad * Math.sin(radians) + pos.y)
 	};
-}
+}*/
 
 const wall1 = new Wall(0, 0, 1200, 0);
 const wall2 = new Wall(0, 0, 0, 1200);
@@ -334,9 +339,8 @@ class Ray {
 			stepY = 1;
 			rayLengthY = ((mapPos.y + 1) - rayPos.y) * sY;
 		}
-
 		console.log("length: ", "x:", rayLengthX, "y:", rayLengthY);
-
+		
 		let side;
 		let hitWall = false;
 		while (!hitWall)
@@ -351,7 +355,7 @@ class Ray {
 				rayLengthY += sY;
 				side = 2 * stepY;			
 			}
-			console.log("mapPos:",mapPos);
+			console.log("mapPos:", mapPos);
 
 			if (map[mapPos.y][mapPos.x])
 				hitWall = true;
@@ -361,7 +365,6 @@ class Ray {
 
 		let pt = getIntersectPoint(side, this.pos, this.slop, {i: mapPos.y, j: mapPos.x});
 		
-
 		pt.x = Math.round(pt.x);
 		pt.y = Math.round(pt.y);
 
@@ -370,7 +373,6 @@ class Ray {
 		drawLine(this.pos, pt);
 
 		return ;
-
 	}
 	
 };
@@ -385,7 +387,9 @@ class Player {
 		for (let i = 314; i <= 359; i++)
 			this.rays.push(new Ray(x, y, i));*/
 
-		for (let i = 0; i <= 45; i += 0.5)
+		for (let i = 0; i <= 22; i += 0.5)
+			this.rays.push(new Ray(x, y, i));
+		for (let i = 337; i <= 359; i += 0.5)
 			this.rays.push(new Ray(x, y, i));
 		
 	}
@@ -455,6 +459,7 @@ document.addEventListener("keyup", (e) => {
 	renderScene();
 });
 
+/*
 const renderScene = function (){
 	const canvas = document.querySelector("#canvas");
 	const ctx = canvas.getContext("2d");
@@ -474,7 +479,23 @@ const renderScene = function (){
 	}
 	renderMap();
 }
+*/
+
+
+const renderScene = function (){
+	const canvas = document.querySelector("#canvas");
+	const ctx = canvas.getContext("2d");
+	canvas.height = 800;
+	canvas.width = 1200;
+
+
+}
 
 window.addEventListener("load", () => {
 	renderScene();
+
+	const startPos = {x:100, y:100};
+	const player = new Player1(startPos, 0);
+	player.show();
+
 });
