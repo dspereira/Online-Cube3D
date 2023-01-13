@@ -442,7 +442,7 @@ class Player {
 
 const player = new Player(100, 100);
 const wall = new Wall(300, 100, 300, 300);
-
+/*
 document.addEventListener("keyup", (e) => {
 	if (e.key === 'w')
 		player.moveForward()
@@ -458,6 +458,7 @@ document.addEventListener("keyup", (e) => {
 		player.updateRays(-ANGLE_STEP);
 	renderScene();
 });
+*/
 
 /*
 const renderScene = function (){
@@ -482,20 +483,22 @@ const renderScene = function (){
 */
 
 
+const STEP = 10;
+const player1 = new Player1({x:100, y:100}, 0);
+
+document.addEventListener("keyup", (e) => {
+	player1.move(e.key, STEP);
+	renderScene();
+});
+
 const renderScene = function (){
 	const canvas = document.querySelector("#canvas");
 	const ctx = canvas.getContext("2d");
 	canvas.height = 800;
 	canvas.width = 1200;
-
-
+	player1.show();
 }
 
 window.addEventListener("load", () => {
 	renderScene();
-
-	const startPos = {x:100, y:100};
-	const player = new Player1(startPos, 0);
-	player.show();
-
 });
