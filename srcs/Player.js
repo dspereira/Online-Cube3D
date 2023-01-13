@@ -4,14 +4,10 @@ class Player1 {
 		this.dir = dirDegree;
 		this.rays = [];
 		this.movDir = {
-			w: 0,
-			s: 180,
-			a: 90,
-			d: 270,
+			w: 0, s: 180, a: 90, d: 270
 		}
 		this.rotDir = {
-			ArrowLeft: 1,
-			ArrowRight: -1
+			ArrowLeft: 1, ArrowRight: -1
 		}
 
 		const vision = 44;
@@ -39,8 +35,11 @@ class Player1 {
 		}		
 	}
 
-	move(key, step) {
+	walk(step, key) {
 		this.updatePos(step, this.movDir[key]);
+	}
+
+	rotation(step, key) {
 		this.updateDir(step, this.rotDir[key]);
 	}
 

@@ -483,11 +483,13 @@ const renderScene = function (){
 */
 
 
-const STEP = 10;
+const STEP_WALK = 10;
+const STEP_ROT = 5;
 const player1 = new Player1({x:100, y:100}, 0);
 
 document.addEventListener("keyup", (e) => {
-	player1.move(e.key, STEP);
+	player1.walk(STEP_WALK, e.key);
+	player1.rotation(STEP_ROT, e.key);
 	renderScene();
 });
 
