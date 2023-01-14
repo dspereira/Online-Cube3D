@@ -23,3 +23,16 @@ const drawLine = function (startPoint, endPoint)
 	ctx.lineTo(endPoint.x, endPoint.y);
 	ctx.stroke();
 }
+
+const drawWall = function(x, y, size) {
+	const ctx = canvas.getContext("2d");
+	ctx.fillStyle = "#2962FF";
+	ctx.fillRect(x, y, size, size);
+}
+
+const drawSquare = function(x, y, size) {
+	const ctx = canvas.getContext("2d");
+	ctx.fillStyle = "#eeeee4";
+	ctx.strokeStyle = "black";
+	ctx.strokeRect(x, y, size, size);
+}

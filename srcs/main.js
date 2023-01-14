@@ -1,6 +1,7 @@
 
 
 // 24x24
+/*
 const map = [  
 	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -27,18 +28,20 @@ const map = [
 	[1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
 	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 ];
-
+*/
 const RADIUS		= 20;
 const ANGLE_STEP	= 10;
 
-const MAP_HEIGHT	= 1200;
+/*const MAP_HEIGHT	= 1200;
 const MAP_WIDTH		= 1200;
+*/
 
 const MAP_ROWS		= 24;
 const MAP_COLUMNS	= 24;
 
 // usage example: getPosMap({x:100, y:100});
 // return obj = {i: 10, j: 5}
+/*
 const getMapPos = function(x, y) {
 	const mapStep = MAP_WIDTH / MAP_COLUMNS;
 
@@ -65,6 +68,7 @@ const getCanvasPos = function(i, j) {
 		y: i * mapStep
 	}
 }
+*/
 
 const getIntersectPoint = function(side, startPos, slop, mapPos) {
 
@@ -139,6 +143,7 @@ const getIntersectPoint = function(side, startPos, slop, mapPos) {
 	ctx.stroke();
 }*/
 
+/*
 const drawWall = function(x, y, size) {
 	const ctx = canvas.getContext("2d");
 	ctx.fillStyle = "#2962FF";
@@ -151,7 +156,9 @@ const drawSquare = function(x, y, size) {
 	ctx.strokeStyle = "black";
 	ctx.strokeRect(x, y, size, size);
 }
+*/
 
+/*
 const renderMap = function()
 {
 	let x = 0;
@@ -168,7 +175,7 @@ const renderMap = function()
 		y += 50;
 	}
 }
-
+*/
 /*
 const degreeToRadian = function(degree){
 	return (0.0174532925 * degree);
@@ -442,23 +449,6 @@ class Player {
 
 const player = new Player(100, 100);
 const wall = new Wall(300, 100, 300, 300);
-/*
-document.addEventListener("keyup", (e) => {
-	if (e.key === 'w')
-		player.moveForward()
-	if (e.key === 's')
-		player.moveBack();
-	if (e.key === 'd')
-		player.moveRight();
-	if (e.key === 'a')
-		player.moveLeft();
-	if (e.key === 'ArrowLeft')
-		player.updateRays(ANGLE_STEP);
-	if (e.key === 'ArrowRight')
-		player.updateRays(-ANGLE_STEP);
-	renderScene();
-});
-*/
 
 /*
 const renderScene = function (){
@@ -483,8 +473,15 @@ const renderScene = function (){
 */
 
 
-const STEP_WALK = 10;
-const STEP_ROT = 5;
+const STEP_WALK			= 10;
+const STEP_ROT 			= 5;
+const CANVAS_HEIGHT 	= 960;
+const CANVAS_WIDTH 		= 960;
+const MAP_HEIGHT 		= 24;
+const MAP_WIDTH 		= 24;
+const SQUARE_SIZE 	= CANVAS_HEIGHT / MAP_HEIGHT;
+
+
 const player1 = new Player1({x:100, y:100}, 0);
 
 document.addEventListener("keyup", (e) => {
@@ -496,8 +493,11 @@ document.addEventListener("keyup", (e) => {
 const renderScene = function (){
 	const canvas = document.querySelector("#canvas");
 	const ctx = canvas.getContext("2d");
-	canvas.height = 800;
-	canvas.width = 1200;
+	canvas.height = CANVAS_HEIGHT;
+	canvas.width = CANVAS_WIDTH;
+
+	console.log(SQUARE_SIZE);
+	renderMap(SQUARE_SIZE);
 	player1.show();
 }
 

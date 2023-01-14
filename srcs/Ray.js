@@ -20,8 +20,6 @@ class Ray1 {
 		const finalPos = getPosObjXYRad(this.pos, this.dir, 50);
 		drawLine(this.pos, finalPos);
 	}
-
-
 };
 
 
