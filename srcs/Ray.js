@@ -1,4 +1,4 @@
-class Ray1 {
+class Ray {
 	constructor(pos, dirDegree) {
 		this.pos = pos;
 		this.dir = dirDegree;
@@ -21,7 +21,7 @@ class Ray1 {
 		let step = {x: 0, y: 0};
 		const rayLength = {x: 0, y: 0};
 		let side;
-		const finalPos = getPosObjXYRad(this.pos, this.dir, 1000);
+		const finalPos = getNewPos(this.pos, this.dir, 1000);
 		const dx = distanceX(this.pos, finalPos);
 		const dy = distanceY(this.pos, finalPos);
 		const scale = {
@@ -92,9 +92,7 @@ class Ray1 {
 	}	
 
 	show() {
-		const finalPos = getPosObjXYRad(this.pos, this.dir, this.distance);
-		console.log("---distance:", this.distance);
-		console.log("---finalPos", finalPos);
+		const finalPos = getNewPos(this.pos, this.dir, this.distance);
 		drawLine(this.pos, finalPos);
 	}
 };
