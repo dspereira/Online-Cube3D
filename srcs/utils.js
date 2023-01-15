@@ -26,3 +26,15 @@ const normalizeAngles = function(angle)
 		angle -= 360;
 	return angle;
 }
+
+const distanceX = function(initPos, finalPos) {
+	return (finalPos.x - initPos.x);
+}
+
+const distanceY = function(initPos, finalPos) {
+	return (finalPos.y - initPos.y);
+}
+
+const mapToCanvasDistConverter = function(distance) {
+	return (distance * (SQUARE_SIZE));
+}

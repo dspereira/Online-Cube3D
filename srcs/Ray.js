@@ -2,6 +2,7 @@ class Ray1 {
 	constructor(pos, dirDegree) {
 		this.pos = pos;
 		this.dir = dirDegree;
+		this.distance = 30;
 	}
 
 	updatePos(pos) {
@@ -16,131 +17,84 @@ class Ray1 {
 			this.dir -= 360;
 	}
 
+	cast() {
+		let step = {x: 0, y: 0};
+		const rayLength = {x: 0, y: 0};
+		let side;
+		const finalPos = getPosObjXYRad(this.pos, this.dir, 1000);
+		const dx = distanceX(this.pos, finalPos);
+		const dy = distanceY(this.pos, finalPos);
+		const scale = {
+			x: Math.sqrt(1 + ((dy/dx) * (dy/dx))),
+			y: Math.sqrt(1 + ((dx/dy) * (dx/dy)))
+		}
+		const rayPosCell = getMapPosDecimal(this.pos.x, this.pos.y);
+		const mapPos = getMapPos(this.pos.x, this.pos.y);
+
+		console.log("inicital pos", this.pos);
+
+		console.log("dx:", dx, "dy:", dy);
+		console.log(scale);
+
+		if (dx < 0) {
+			step.x = -1;
+			rayLength.x = (rayPosCell.x - mapPos.x) * scale.x;
+		}
+		else {
+			step.x = 1;
+			rayLength.x = ((mapPos.x + 1) - rayPosCell.x) * scale.x;
+		}
+		if (dy < 0) {
+			step.y = -1;
+			rayLength.y = (rayPosCell.y - mapPos.y) * scale.y;
+		}
+		else {
+			step.y = 1;
+			rayLength.y = ((mapPos.y + 1) - rayPosCell.y) * scale.y;
+		}
+
+		while (!map[mapPos.y][mapPos.x])
+		{
+			if (rayLength.x < rayLength.y){
+				mapPos.x += step.x;
+				rayLength.x += scale.x;
+				side = 1 * step.x;
+			}
+			else {
+				mapPos.y += step.y;
+				rayLength.y += scale.y;
+				side = 2 * step.y;
+			}
+		}
+		this.setDistance(side, mapPos, scale);
+	}
+
+	setDistance(side, mapPos, scale) {
+		let canvasPos = getCanvasPos(mapPos.x, mapPos.y);
+		let finalDist = {x: 0, y: 0};
+
+		if (side == 1) {
+			finalDist.x = canvasPos.x;
+			this.distance = (finalDist.x - this.pos.x) * scale.x;
+		}
+		else if (side == 2) {
+			finalDist.y = canvasPos.y;
+			this.distance = (finalDist.y - this.pos.y) * scale.y;
+		}
+		else if (side == -2) {
+			finalDist.y = canvasPos.y + SQUARE_SIZE;
+			this.distance = (this.pos.y - finalDist.y) * scale.y;
+		}
+		else if (side == -1) {
+			finalDist.x = canvasPos.x + SQUARE_SIZE;
+			this.distance =  (this.pos.x - finalDist.x) * scale.x;
+		}
+	}	
+
 	show() {
-		const finalPos = getPosObjXYRad(this.pos, this.dir, 50);
+		const finalPos = getPosObjXYRad(this.pos, this.dir, this.distance);
+		console.log("---distance:", this.distance);
+		console.log("---finalPos", finalPos);
 		drawLine(this.pos, finalPos);
 	}
 };
-
-
-/*
-class Ray {
-	constructor(x, y, angleDegree) {
-		this.pos = {x: x, y: y};
-		this.angleDegree = angleDegree;
-		this.angleRadians = degreeToRadian(angleDegree);
-		this.dir = getPosObjXY(this.pos, angleDegree);
-		this.slop = slopCalc(this.pos, this.dir);
-	}
-
-	show() {
-		console.log("####################");
-		console.log("angle:", this.angleDegree, "slop:", this.slop)
-		console.log("pos: ", "x:", this.pos.x, "y:", this.pos.y);
-		console.log("dir: ", "x:", this.dir.x, "y:", this.dir.y);
-		drawLine(this.pos, this.dir);
-	}
-
-	updatePos(pos) {
-		this.pos = pos;
-		this.dir = getPosObjXY(this.pos, this.angleDegree);
-	}
-
-	updateDir(angle){
-		this.angleDegree += angle;
-		if (this.angleDegree < 0)
-			this.angleDegree += 360;
-		else if (this.angleDegree >= 360)
-			this.angleDegree -= 360;
-		this.angleRadians = degreeToRadian(this.angleDegree);
-		this.dir = getPosObjXY(this.pos, this.angleDegree);
-		this.slop = slopCalc(this.pos, this.dir);
-	}
-	
-	cast2()
-	{
-		const slopX = slopCalc(this.pos, getPosObjXYRad(this.pos, this.angleDegree, 1000));
-		const slopY = slopCalc1(this.pos, getPosObjXYRad(this.pos, this.angleDegree, 1000));
-		this.slop = slopCalc(this.pos, getPosObjXYRad(this.pos, this.angleDegree, 1000));
-
-		console.log("SLOP:", this.slop);
-
-		const sX = Math.sqrt(1 + slopX * slopX);
-		const sY = Math.sqrt(1 + slopY * slopY);
-		let stepX;
-		let stepY;
-
-		let rayLengthX;
-		let rayLengthY;
-
-		let mPos = getMapPos(this.pos.x, this.pos.y);
-		let rPos = getMapPosRaw(this.pos.x, this.pos.y);
-
-		let mapPos = {
-			x: mPos.j,
-			y: mPos.i
-		}
-
-		let rayPos = {
-			x: rPos.j,
-			y: rPos.i
-		}
-		// j = x
-		// i = x
-
-		const rayDir = getDir(this.pos, this.dir);
-
-		if (rayDir.x < 0) {
-			stepX = -1;
-			rayLengthX = (rayPos.x - mapPos.x) * sX;
-		}
-		else {
-			stepX = 1;
-			rayLengthX = ((mapPos.x + 1) - rayPos.x) * sX;
-		}
-		if (rayDir.y < 0) {
-			stepY = -1;
-			rayLengthY = (rayPos.y - mapPos.y) * sY;
-		}
-		else {
-			stepY = 1;
-			rayLengthY = ((mapPos.y + 1) - rayPos.y) * sY;
-		}
-		console.log("length: ", "x:", rayLengthX, "y:", rayLengthY);
-		
-		let side;
-		let hitWall = false;
-		while (!hitWall)
-		{
-			if (rayLengthX < rayLengthY){
-				mapPos.x += stepX;
-				rayLengthX += sX;
-				side = 1 * stepX;
-			}
-			else {
-				mapPos.y += stepY;
-				rayLengthY += sY;
-				side = 2 * stepY;			
-			}
-			console.log("mapPos:", mapPos);
-
-			if (map[mapPos.y][mapPos.x])
-				hitWall = true;
-		}
-		console.log("side:", side);
-		console.log("posicao:", mapPos);
-
-		let pt = getIntersectPoint(side, this.pos, this.slop, {i: mapPos.y, j: mapPos.x});
-		
-		pt.x = Math.round(pt.x);
-		pt.y = Math.round(pt.y);
-
-		console.log("Intersect Point: ", pt);
-
-		drawLine(this.pos, pt);
-
-		return ;
-	}
-	
-};
-*/

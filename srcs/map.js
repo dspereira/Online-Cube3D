@@ -27,29 +27,23 @@ const map = [
 ];
 
 const getMapPos = function(x, y) {
-	const mapStep = MAP_WIDTH / MAP_COLUMNS;
-
 	return {
-		i: Math.floor(y / mapStep),
-		j: Math.floor(x / mapStep)
+		x: Math.floor(x / SQUARE_SIZE),
+		y: Math.floor(y / SQUARE_SIZE)
 	}
 }
 
 const getMapPosDecimal = function(x, y) {
-	const mapStep = MAP_WIDTH / MAP_COLUMNS;
-
 	return {
-		i: y / mapStep,
-		j: x / mapStep
+		x: x / SQUARE_SIZE,
+		y: y / SQUARE_SIZE
 	}
 }
 
-const getCanvasPos = function(i, j) {
-	const mapStep = MAP_WIDTH / MAP_COLUMNS;
-
+const getCanvasPos = function(x, y) {
 	return {
-		x: Math.floor(j * mapStep),
-		y: Math.floor(i * mapStep)
+		x: Math.floor(x * SQUARE_SIZE),
+		y: Math.floor(y * SQUARE_SIZE)
 	}
 }
 
@@ -61,8 +55,8 @@ const renderMap = function(squareSize)
 		for (const elm of line) {
 			if (elm)
 				drawWall(x, y, squareSize);
-			else 
-				drawSquare(x, y, squareSize);
+			else  
+				drawFreeSpace(x, y, squareSize);
 			x += squareSize;
 		}
 		x = 0;

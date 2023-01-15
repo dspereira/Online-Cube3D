@@ -30,7 +30,7 @@ const drawWall = function(x, y, size) {
 	ctx.fillRect(x, y, size, size);
 }
 
-const drawSquare = function(x, y, size) {
+const drawFreeSpace = function(x, y, size) {
 	const ctx = canvas.getContext("2d");
 	ctx.fillStyle = "#eeeee4";
 	ctx.strokeStyle = "black";

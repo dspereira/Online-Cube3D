@@ -1,74 +1,11 @@
 
 
-// 24x24
-/*
-const map = [  
-	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,2,2,2,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1],
-	[1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,3,0,0,0,3,0,0,0,1],
-	[1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,2,2,0,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,4,0,0,0,0,5,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,4,0,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-];
-*/
 const RADIUS		= 20;
 const ANGLE_STEP	= 10;
-
-/*const MAP_HEIGHT	= 1200;
-const MAP_WIDTH		= 1200;
-*/
 
 const MAP_ROWS		= 24;
 const MAP_COLUMNS	= 24;
 
-// usage example: getPosMap({x:100, y:100});
-// return obj = {i: 10, j: 5}
-/*
-const getMapPos = function(x, y) {
-	const mapStep = MAP_WIDTH / MAP_COLUMNS;
-
-	return {
-		i: Math.floor(y / mapStep),
-		j: Math.floor(x / mapStep)
-	}
-}
-
-const getMapPosRaw = function(x, y) {
-	const mapStep = MAP_WIDTH / MAP_COLUMNS;
-
-	return {
-		i: y / mapStep,
-		j: x / mapStep
-	}
-}
-
-const getCanvasPos = function(i, j) {
-	const mapStep = MAP_WIDTH / MAP_COLUMNS;
-
-	return {
-		x: j * mapStep,
-		y: i * mapStep
-	}
-}
-*/
 
 const getIntersectPoint = function(side, startPos, slop, mapPos) {
 
@@ -115,87 +52,12 @@ const getIntersectPoint = function(side, startPos, slop, mapPos) {
 	};
 }
 
-// usage example: drawLine({x:100, y:100}, {x:200, y:100});
-/*const drawLine = function (startPoint, endPoint)
-{
-	const canvas = document.querySelector("#canvas");
-	const ctx = canvas.getContext("2d");
-	ctx.beginPath();
-	ctx.lineWidth = 1;
-	ctx.strokeStyle = "#FF8A80";
-	ctx.moveTo(startPoint.x, startPoint.y);
-	ctx.lineTo(endPoint.x, endPoint.y);
-	ctx.stroke();
-}
-*/
-
-// usage example: drawPoint({x:100, y:100});
-/*const drawPoint = function (position)
-{
-	const canvas = document.querySelector("#canvas");
-	const ctx = canvas.getContext("2d");
-	ctx.lineWidth = 25;
-	ctx.lineCap = "round";
-	ctx.strokeStyle = "#E53935";
-	ctx.beginPath();
-	ctx.moveTo(position.x, position.y);
-	ctx.lineTo(position.x, position.y);
-	ctx.stroke();
-}*/
-
-/*
-const drawWall = function(x, y, size) {
-	const ctx = canvas.getContext("2d");
-	ctx.fillStyle = "#2962FF";
-	ctx.fillRect(x, y, size, size);
-}
-
-const drawSquare = function(x, y, size) {
-	const ctx = canvas.getContext("2d");
-	ctx.fillStyle = "#eeeee4";
-	ctx.strokeStyle = "black";
-	ctx.strokeRect(x, y, size, size);
-}
-*/
-
-/*
-const renderMap = function()
-{
-	let x = 0;
-	let y = 0;
-	for (const line of map) {
-		for (const elm of line) {
-			if (elm)
-				drawWall(x, y, 50);
-			else 
-				drawSquare(x, y, 50);
-			x += 50;
-		}
-		x = 0;
-		y += 50;
-	}
-}
-*/
-/*
-const degreeToRadian = function(degree){
-	return (0.0174532925 * degree);
-}
-*/
-
-
 // usage example: slopCalc({x:100, y:100}, {x:200, y:100});
 const slopCalc = function(p1, p2) {
 	const y = p2.y - p1.y;
 	const x = p2.x - p1.x;
-	let signal = 1;
 	let res;
-
-	//if (y < 0 || x < 0)
-	//	signal = -1;
 	res = y / x;
-	//if (signal < 0 && res > 0)
-	//	res *= signal;
-
 	if (!y)
 		return 0;
 	if (!x)
@@ -241,23 +103,6 @@ class Wall {
 	}
 };
 
-// usage example: getPosObjXY({x:100, y:100}, 45);
-//example return: obj = {x: 10, y: 10}
-/*const getPosObjXY = function (pos, angleDegree){
-	const radians = degreeToRadian(angleDegree);
-	return {
-		x: Math.round(RADIUS * Math.cos(radians) + pos.x),
-		y: Math.round(-RADIUS * Math.sin(radians) + pos.y)
-	};
-}
-
-const getPosObjXYRad = function (pos, angleDegree, rad){
-	const radians = degreeToRadian(angleDegree);
-	return {
-		x: Math.round(rad * Math.cos(radians) + pos.x),
-		y: Math.round(-rad * Math.sin(radians) + pos.y)
-	};
-}*/
 
 const wall1 = new Wall(0, 0, 1200, 0);
 const wall2 = new Wall(0, 0, 0, 1200);
@@ -474,15 +319,15 @@ const renderScene = function (){
 
 
 const STEP_WALK			= 10;
-const STEP_ROT 			= 5;
-const CANVAS_HEIGHT 	= 960;
-const CANVAS_WIDTH 		= 960;
+const STEP_ROT 			= 1;
+const CANVAS_HEIGHT 	= 720;
+const CANVAS_WIDTH 		= 720;
 const MAP_HEIGHT 		= 24;
 const MAP_WIDTH 		= 24;
-const SQUARE_SIZE 	= CANVAS_HEIGHT / MAP_HEIGHT;
+const SQUARE_SIZE 		= CANVAS_HEIGHT / MAP_HEIGHT;
 
 
-const player1 = new Player1({x:100, y:100}, 0);
+const player1 = new Player1({x:60, y:60}, 0);
 
 document.addEventListener("keyup", (e) => {
 	player1.walk(STEP_WALK, e.key);
@@ -493,11 +338,11 @@ document.addEventListener("keyup", (e) => {
 const renderScene = function (){
 	const canvas = document.querySelector("#canvas");
 	const ctx = canvas.getContext("2d");
+
 	canvas.height = CANVAS_HEIGHT;
 	canvas.width = CANVAS_WIDTH;
-
-	console.log(SQUARE_SIZE);
 	renderMap(SQUARE_SIZE);
+	player1.raycast();
 	player1.show();
 }
 
