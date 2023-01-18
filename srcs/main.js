@@ -4,8 +4,8 @@ const CANVAS_HEIGHT 	= 480;
 const CANVAS_WIDTH 		= 480;
 const MAP_HEIGHT 		= 24;
 const MAP_WIDTH 		= 24;
-const VISION			= 44;
-const RAY_DISTANCE		= 0.25;
+const VISION			= 60;
+const RAY_DISTANCE		= 0.05;
 const NUMBER_RAYS		= VISION / RAY_DISTANCE;
 const SQUARE_SIZE 		= CANVAS_HEIGHT / MAP_HEIGHT;
 
@@ -53,9 +53,14 @@ const drawWall3D = function() {
 	let y;
 	let lineSize;
 	let color;
+	let distToWall;
 
+	
 	for (const [i, ray] of player.rays.entries()) {
 	
+		// Function to reduce fisheye effect
+		distToWall = getDistanceWallCamera(player, ray);
+
 		if (ray.side == 1)
 			color = "red";
 		if (ray.side == -1)
@@ -75,8 +80,10 @@ const drawWall3D = function() {
 		//console.log(i, ray.distance);
 		//lineSize = Math.abs(200- MAX_DISTANCE);
 		//lineSize = Math.abs(ray.distToCamDir - MAX_DISTANCE);
-		lineSize = Math.abs(MAX_DISTANCE / ray.distToCamDir);
+		//lineSize = Math.abs(MAX_DISTANCE / ray.distToCamDir);
 
+		//lineSize = Math.abs(MAX_DISTANCE / (ray.distance/50));
+		lineSize = Math.abs(MAX_DISTANCE / (distToWall/10));
 		//lineSize = Math.abs(ray.distance - MAX_DISTANCE);
 		y = (C_HEIGHT / 2) - (lineSize / 2)
 		drawWall2(x, y, lineSize, color);
@@ -85,7 +92,6 @@ const drawWall3D = function() {
 
 	}
 }
-
 
 const renderScene3D = function (){
 	const canvas = document.querySelector("#canvas1");

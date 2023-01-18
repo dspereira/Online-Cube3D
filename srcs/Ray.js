@@ -1,5 +1,5 @@
 class Ray {
-	constructor(pos, dirDegree) {
+	constructor(pos, dirDegree, dirPlayer) {
 		this.pos = pos;
 		this.dir = dirDegree;
 		this.distance = 30;
@@ -63,7 +63,6 @@ class Ray {
 				side = 2 * step.y;
 			}
 		}
-
 		if (side == 1 || side == -1) 
 			this.distToCamDir = (rayLength.x - scale.x);
 		if (side == 2 || side == -2)

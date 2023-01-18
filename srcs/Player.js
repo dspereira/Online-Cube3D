@@ -12,6 +12,8 @@ class Player {
 
 		const halfVision = VISION / 2;
 
+		console.log("dirDegree", dirDegree);
+
 		//this.rays.push(new Ray(this.pos, normalizeAngles(0)));
 		for (let i = dirDegree + halfVision; i > dirDegree; i -= RAY_DISTANCE)
 			this.rays.push(new Ray(this.pos, normalizeAngles(i)));
