@@ -3,6 +3,8 @@ class Ray {
 		this.pos = pos;
 		this.dir = dirDegree;
 		this.distance = 30;
+		this.side;
+		this.distToCamDir;
 	}
 
 	updatePos(pos) {
@@ -30,11 +32,6 @@ class Ray {
 		}
 		const rayPosCell = getMapPosDecimal(this.pos.x, this.pos.y);
 		const mapPos = getMapPos(this.pos.x, this.pos.y);
-
-		console.log("inicital pos", this.pos);
-
-		console.log("dx:", dx, "dy:", dy);
-		console.log(scale);
 
 		if (dx < 0) {
 			step.x = -1;
@@ -66,6 +63,13 @@ class Ray {
 				side = 2 * step.y;
 			}
 		}
+
+		if (side == 1 || side == -1) 
+			this.distToCamDir = (rayLength.x - scale.x);
+		if (side == 2 || side == -2)
+			this.distToCamDir = (rayLength.y - scale.y);
+
+		this.side = side;
 		this.setDistance(side, mapPos, scale);
 	}
 
@@ -76,18 +80,22 @@ class Ray {
 		if (side == 1) {
 			finalDist.x = canvasPos.x;
 			this.distance = (finalDist.x - this.pos.x) * scale.x;
+			//this.distToCamDir = this.distance - scale.x;
 		}
 		else if (side == 2) {
 			finalDist.y = canvasPos.y;
 			this.distance = (finalDist.y - this.pos.y) * scale.y;
+			//this.distToCamDir = this.distance - scale.y;
 		}
 		else if (side == -2) {
 			finalDist.y = canvasPos.y + SQUARE_SIZE;
 			this.distance = (this.pos.y - finalDist.y) * scale.y;
+			//this.distToCamDir = this.distance - scale.y;
 		}
 		else if (side == -1) {
 			finalDist.x = canvasPos.x + SQUARE_SIZE;
 			this.distance =  (this.pos.x - finalDist.x) * scale.x;
+			//this.distToCamDir = this.distance - scale.x;
 		}
 	}	
 

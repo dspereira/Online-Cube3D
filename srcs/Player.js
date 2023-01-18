@@ -9,12 +9,13 @@ class Player {
 		this.rotDir = {
 			ArrowLeft: 1, ArrowRight: -1
 		}
-		const vision = 44;
-		const halfVision = vision / 2;
 
-		for (let i = dirDegree + halfVision; i > dirDegree; i--)
+		const halfVision = VISION / 2;
+
+		//this.rays.push(new Ray(this.pos, normalizeAngles(0)));
+		for (let i = dirDegree + halfVision; i > dirDegree; i -= RAY_DISTANCE)
 			this.rays.push(new Ray(this.pos, normalizeAngles(i)));
-		for (let i = dirDegree; i > dirDegree - halfVision; i--)
+		for (let i = dirDegree; i > dirDegree - halfVision; i -= RAY_DISTANCE)
 			this.rays.push(new Ray(this.pos, normalizeAngles(i)));
 		
 	}
