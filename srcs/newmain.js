@@ -2,8 +2,7 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-const frame = new Frame(ctx.createImageData(1000, 1000));
-
+const frame = new Frame(ctx, 1000, 1000);
 
 for (let i = 0; i < 1000; i++){
 	for (let j = 0; j < 1000; j++){
@@ -18,4 +17,4 @@ console.log(obj.getBlue());
 console.log(obj.getGreen());
 console.log(obj.getAlpha());
 
-ctx.putImageData(frame.getFrame(), 0, 0);
+frame.display();
