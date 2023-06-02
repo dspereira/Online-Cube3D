@@ -10,6 +10,7 @@ const NUMBER_RAYS		= VISION / RAY_DISTANCE;
 const SQUARE_SIZE 		= CANVAS_HEIGHT / MAP_HEIGHT;
 
 const startPosition = {x:60, y:60};
+
 const player = new Player(startPosition, 0);
 
 document.addEventListener("keyup", (e) => {

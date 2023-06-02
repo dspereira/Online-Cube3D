@@ -12,7 +12,7 @@ function RgbaHexFactory(hex)
 		},
 		getAlpha(){
 			return (hex & 0xFF);
-		}	
+		}
 	}
 }
 
@@ -30,7 +30,7 @@ function RgbaFactory(red, green, blue, alpha)
 		},
 		getAlpha(){
 			return (alpha);
-		}	
+		}
 	}
 }
 

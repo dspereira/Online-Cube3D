@@ -1,3 +1,5 @@
+
+
 class Ray {
 	constructor(pos, dirDegree, dirPlayer) {
 		this.pos = pos;
