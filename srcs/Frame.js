@@ -1,4 +1,4 @@
-function RgbaHexFactory(hex)
+/*function RgbaHexFactory(hex)
 {
 	return {
 		getRed(){
@@ -13,6 +13,17 @@ function RgbaHexFactory(hex)
 		getAlpha(){
 			return (hex & 0xFF);
 		}
+	}
+}
+*/
+
+function RgbaHexFactory(hex)
+{
+	return {
+		red: (hex >> 24) & 0xFF,
+		green: (hex >> 16) & 0xFF,
+		blue: (hex >> 8) & 0xFF,
+		alpha: hex & 0xFF
 	}
 }
 
@@ -37,11 +48,16 @@ function RgbaFactory(red, green, blue, alpha)
 class Frame {
 	#frame;
 	#ctx;
+	#bpp;
+	#lineLen;
 
 	constructor(ctx, x, y) 
 	{
 		this.#ctx = ctx;
 		this.#frame = ctx.createImageData(x, y);
+		this.#bpp = 4;
+		this.#lineLen = this.#bpp * 900;
+
 	}
 
 	getFrame()
@@ -68,15 +84,16 @@ class Frame {
 	{
 		// verificar se x é superior a weith
 		// verificar se x é superior a height
-		const bpp = 4;
-		const lineLen = bpp * this.#frame.width;
-		const pos = x * bpp + y * lineLen;
-		const colorObj = RgbaHexFactory(colorRgbaHex);
 
-		this.#frame.data[pos] = colorObj.getRed();
-		this.#frame.data[pos + 1] = colorObj.getGreen();
-		this.#frame.data[pos + 2] = colorObj.getBlue();
-		this.#frame.data[pos + 3] = colorObj.getAlpha();
+		const pos = x * this.#bpp + y * this.#lineLen;
+
+		this.#frame.data[pos + 3] =  colorRgbaHex & 0xFF;
+		colorRgbaHex = colorRgbaHex >> 8;
+		this.#frame.data[pos + 2] = colorRgbaHex & 0xFF;
+		colorRgbaHex = colorRgbaHex >> 8;
+		this.#frame.data[pos + 1] = colorRgbaHex & 0xFF;
+		colorRgbaHex = colorRgbaHex >> 8;
+		this.#frame.data[pos] = colorRgbaHex & 0xFF;
 	}
 
 	display()

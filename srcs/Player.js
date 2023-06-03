@@ -80,15 +80,6 @@ class Player {
 		for (const [i, ray] of player.rays.entries()) {
 			distToWall = getDistanceWallCamera(player, ray);
 	
-			/*if (ray.side == 1)
-				color = "red";
-			if (ray.side == -1)
-				color = "blue";
-			if (ray.side == 2)
-				color = "green";
-			if (ray.side == -2)
-				color = "yellow";
-			*/
 			if (ray.side == 1)
 				color = 0x662828ff;
 			if (ray.side == -1)
@@ -124,7 +115,6 @@ class Player {
 				y++;
 			}
 			x++;
-			
 		}
 		frame.display();
 	}
