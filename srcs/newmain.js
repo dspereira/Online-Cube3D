@@ -23,7 +23,7 @@ document.addEventListener("keyup", (e) => {
 
 let loop;
 let i = 0;
-let fps = 100;
+let fps = 60;
 
 const update = function (){
 	player.raycast();

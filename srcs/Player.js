@@ -66,6 +66,7 @@ class Player {
 			ray.show();
 	}
 
+	/*
 	render(frame) {
 		const C_HEIGHT		= 900;
 		const C_WIDTH		= 900;
@@ -117,6 +118,60 @@ class Player {
 			x++;
 		}
 		frame.display();
-	}
+	}*/
+	render(frame) {
+		const C_HEIGHT		= 900;
+		const C_WIDTH		= 900;
+		const MAX_DISTANCE	= 900;
+		let x = 0;
+		let y;
+		let lineSize;
+		let color;
+		let distToWall;
+		let index;
 
+		let line;
+
+		frame.resetFramePos();
+
+		for (const [i, ray] of player.rays.entries()) {
+
+			
+			distToWall = getDistanceWallCamera(player, ray);
+	
+			if (ray.side == 1)
+				color = 0x662828ff;
+			if (ray.side == -1)
+				color = 0x133337ff;
+			if (ray.side == 2)
+				color = 0x13A000ff;
+			if (ray.side == -2)
+				color = 0x9EC9CFff;
+
+
+			//lineSize = Math.abs(MAX_DISTANCE / (distToWall/10));
+
+			lineSize = Math.abs(MAX_DISTANCE / (distToWall/10))
+			y = Math.floor((C_HEIGHT / 2) - (lineSize / 2));
+
+			index = 0;
+			line = 0;
+
+			while (index < 900)
+			{
+				if (index < y)
+					frame.setNextPixelColor(0x66CCCCFF);
+				else if (index >= y && line < lineSize)
+				{
+					frame.setNextPixelColor(color);
+					line++;
+				}
+				else 
+				frame.setNextPixelColor(0xf2d4c2ff);
+				index++;
+			}
+			
+		}
+		frame.display();
+	}
 };

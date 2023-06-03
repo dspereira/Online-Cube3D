@@ -51,13 +51,20 @@ class Frame {
 	#bpp;
 	#lineLen;
 
+	#pos;
+	#col;
+	#numWrite;
+
+
 	constructor(ctx, x, y) 
 	{
 		this.#ctx = ctx;
 		this.#frame = ctx.createImageData(x, y);
 		this.#bpp = 4;
-		this.#lineLen = this.#bpp * 900;
-
+		this.#lineLen = this.#bpp * x;
+		this.#pos = 0;
+		this.#col = 0;
+		this.#numWrite = 0;
 	}
 
 	getFrame()
@@ -94,6 +101,36 @@ class Frame {
 		this.#frame.data[pos + 1] = colorRgbaHex & 0xFF;
 		colorRgbaHex = colorRgbaHex >> 8;
 		this.#frame.data[pos] = colorRgbaHex & 0xFF;
+	}
+
+	setNextPixelColor(colorRgbaHex)
+	{
+		let pos = this.#pos;
+
+		this.#frame.data[pos + 3] =  colorRgbaHex & 0xFF;
+		colorRgbaHex = colorRgbaHex >> 8;
+		this.#frame.data[pos + 2] = colorRgbaHex & 0xFF;
+		colorRgbaHex = colorRgbaHex >> 8;
+		this.#frame.data[pos + 1] = colorRgbaHex & 0xFF;
+		colorRgbaHex = colorRgbaHex >> 8;
+		this.#frame.data[pos] = colorRgbaHex & 0xFF;	
+
+		//this.#pos += this.#bpp;
+		this.#pos += this.#lineLen;
+		this.#numWrite++;
+		if (this.#numWrite >= 900)
+		{
+			this.#numWrite = 0;
+			this.#col += this.#bpp;
+			this.#pos = this.#col;
+		}
+		
+	}
+
+	resetFramePos()
+	{
+		this.#pos = 0;
+		this.#col = 0;
 	}
 
 	display()
