@@ -126,18 +126,6 @@ class Frame {
 	setPixelColor(x, y, colorRgbaHex)
 	{
         let pos = 0;
-
-		
-       	if (x < this.#xSize && y < this.#ySize)
-        {
-			pos = x * this.#bpp + y * this.#lineLen;
-			this.#frame.data[pos] = (colorRgbaHex >> 24) & 0xFF;
-			this.#frame.data[pos + 1] = (colorRgbaHex >> 16) & 0xFF;
-			this.#frame.data[pos + 2] = (colorRgbaHex >> 8) & 0xFF;
-			this.#frame.data[pos + 3] = colorRgbaHex & 0xFF;
-		}
-
-		
         if (x < this.#xSize && y < this.#ySize)
         {
 			pos = this.#pixelMatrix[y][x];
@@ -150,6 +138,7 @@ class Frame {
 		
 	}
 	*/
+	
 
 	
 	setPixelColor(x, y, colorRgbaHex)
@@ -166,7 +155,8 @@ class Frame {
 			this.#frame.data[pos + 3] = colorRgbaHex & 0xFF;
 		}
 	}
-
+	
+	/*
 	setPixelColor(x, y, colorRgbaHex)
 	{
         let pos = 0;
@@ -185,7 +175,7 @@ class Frame {
 			this.#frame.data[pos + 3] = colorRgbaHex & 0xFF;
 		}
 	}
-	
+	*/
 
 	display()
 	{
