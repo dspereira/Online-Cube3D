@@ -51,10 +51,14 @@ class Frame {
 	#bpp;
 	#lineLen;
 
-	#pos;
-	#col;
-	#numWrite;
+	#xSize
+	#ySize
 
+    #pixelMatrix;
+    #frameBuff;
+
+	#x;
+	#valueCalc;
 
 	constructor(ctx, x, y) 
 	{
@@ -62,9 +66,40 @@ class Frame {
 		this.#frame = ctx.createImageData(x, y);
 		this.#bpp = 4;
 		this.#lineLen = this.#bpp * x;
-		this.#pos = 0;
-		this.#col = 0;
-		this.#numWrite = 0;
+		this.#xSize = x;
+		this.#ySize = y;
+
+		this.initPixelMatrix();
+
+        this.#frameBuff = new Array(x * y * 4);
+
+		this.#x = 0;
+		this.#valueCalc = 0;
+	}
+
+	initPixelMatrix()
+	{
+		let pos = 0;
+		let line = [];
+		this.#pixelMatrix = [];
+		
+		for (let i = 0; i < this.#ySize; i++)
+		{
+			for (let j = 0; j < this.#xSize; j++)
+			{
+				/*line.push({
+					rPos: pos,
+					gPos: pos + 1,
+					bPos: pos + 2,
+					aPos: pos + 3
+				});*/
+
+				line.push(pos);
+				pos += this.#bpp;
+			}
+			this.#pixelMatrix.push(line);
+			line = [];
+		}
 	}
 
 	getFrame()
@@ -86,52 +121,71 @@ class Frame {
 			)
 		);
 	}
-
+	
+	/*
 	setPixelColor(x, y, colorRgbaHex)
 	{
-		// verificar se x é superior a weith
-		// verificar se x é superior a height
+        let pos = 0;
 
-		const pos = x * this.#bpp + y * this.#lineLen;
+		
+       	if (x < this.#xSize && y < this.#ySize)
+        {
+			pos = x * this.#bpp + y * this.#lineLen;
+			this.#frame.data[pos] = (colorRgbaHex >> 24) & 0xFF;
+			this.#frame.data[pos + 1] = (colorRgbaHex >> 16) & 0xFF;
+			this.#frame.data[pos + 2] = (colorRgbaHex >> 8) & 0xFF;
+			this.#frame.data[pos + 3] = colorRgbaHex & 0xFF;
+		}
 
-		this.#frame.data[pos + 3] =  colorRgbaHex & 0xFF;
-		colorRgbaHex = colorRgbaHex >> 8;
-		this.#frame.data[pos + 2] = colorRgbaHex & 0xFF;
-		colorRgbaHex = colorRgbaHex >> 8;
-		this.#frame.data[pos + 1] = colorRgbaHex & 0xFF;
-		colorRgbaHex = colorRgbaHex >> 8;
-		this.#frame.data[pos] = colorRgbaHex & 0xFF;
-	}
+		
+        if (x < this.#xSize && y < this.#ySize)
+        {
+			pos = this.#pixelMatrix[y][x];
 
-	setNextPixelColor(colorRgbaHex)
-	{
-		let pos = this.#pos;
-
-		this.#frame.data[pos + 3] =  colorRgbaHex & 0xFF;
-		colorRgbaHex = colorRgbaHex >> 8;
-		this.#frame.data[pos + 2] = colorRgbaHex & 0xFF;
-		colorRgbaHex = colorRgbaHex >> 8;
-		this.#frame.data[pos + 1] = colorRgbaHex & 0xFF;
-		colorRgbaHex = colorRgbaHex >> 8;
-		this.#frame.data[pos] = colorRgbaHex & 0xFF;	
-
-		//this.#pos += this.#bpp;
-		this.#pos += this.#lineLen;
-		this.#numWrite++;
-		if (this.#numWrite >= 900)
-		{
-			this.#numWrite = 0;
-			this.#col += this.#bpp;
-			this.#pos = this.#col;
+			this.#frame.data[pos] = (colorRgbaHex >> 24) & 0xFF;
+			this.#frame.data[pos + 1] = (colorRgbaHex >> 16) & 0xFF;
+			this.#frame.data[pos + 2] = (colorRgbaHex >> 8) & 0xFF;
+			this.#frame.data[pos + 3] = colorRgbaHex & 0xFF;
 		}
 		
 	}
+	*/
 
-	resetFramePos()
+	
+	setPixelColor(x, y, colorRgbaHex)
 	{
-		this.#pos = 0;
-		this.#col = 0;
+        let pos = 0;
+
+		
+       	if (x < this.#xSize && y < this.#ySize)
+        {
+			pos = x * this.#bpp + y * this.#lineLen;
+			this.#frame.data[pos] = (colorRgbaHex >> 24) & 0xFF;
+			this.#frame.data[pos + 1] = (colorRgbaHex >> 16) & 0xFF;
+			this.#frame.data[pos + 2] = (colorRgbaHex >> 8) & 0xFF;
+			this.#frame.data[pos + 3] = colorRgbaHex & 0xFF;
+		}
 	}
+
+	setPixelColor(x, y, colorRgbaHex)
+	{
+        let pos = 0;
+		
+        if (x < this.#xSize && y < this.#ySize)
+        {
+			if (x != this.#x)
+			{
+				this.#x = x;
+				this.#valueCalc = x * this.#bpp;
+			}
+			pos = this.#valueCalc + y * this.#lineLen;
+			this.#frame.data[pos] = (colorRgbaHex >> 24) & 0xFF;
+			this.#frame.data[pos + 1] = (colorRgbaHex >> 16) & 0xFF;
+			this.#frame.data[pos + 2] = (colorRgbaHex >> 8) & 0xFF;
+			this.#frame.data[pos + 3] = colorRgbaHex & 0xFF;
+		}
+	}
+	
 
 	display()
 	{

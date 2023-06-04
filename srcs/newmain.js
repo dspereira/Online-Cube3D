@@ -33,6 +33,7 @@ const render = function (){
 	player.render(frame);
 }
 
+
 window.addEventListener("load", () => {
 	loop = setInterval(() => {
 		update();

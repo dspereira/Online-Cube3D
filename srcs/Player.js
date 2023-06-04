@@ -26,6 +26,8 @@ class Player {
 			this.rays.push(new Ray(this.pos, normalizeAngles(i)));
 		for (let i = dirDegree; i > dirDegree - halfVision; i -= RAY_DISTANCE)
 			this.rays.push(new Ray(this.pos, normalizeAngles(i)));
+
+		this.frameBuff = new Array(900 * 900);
 		
 	}
 
@@ -66,7 +68,7 @@ class Player {
 			ray.show();
 	}
 
-	/*
+	
 	render(frame) {
 		const C_HEIGHT		= 900;
 		const C_WIDTH		= 900;
@@ -118,7 +120,9 @@ class Player {
 			x++;
 		}
 		frame.display();
-	}*/
+	}
+
+	/*
 	render(frame) {
 		const C_HEIGHT		= 900;
 		const C_WIDTH		= 900;
@@ -157,21 +161,40 @@ class Player {
 			index = 0;
 			line = 0;
 
+			//const pos = x * this.#bpp + y * this.#lineLen;
+			const pos = 0;
+
 			while (index < 900)
 			{
 				if (index < y)
-					frame.setNextPixelColor(0x66CCCCFF);
+				{
+					pos = x * 4 + y * 900 * 4;
+
+					this.frameBuff[pos] = 0x66CCCCFF & 0xFF;
+					this.frameBuff[pos + 1] = (0x66CCCCFF >> 8) & 0xFF;
+					this.frameBuff[pos + 2] = (0x66CCCCFF >> 16) & 0xFF;
+					this.frameBuff[pos + 3] = (0x66CCCCFF >> 24) & 0xFF;
+
+					//frame.setNextPixelColor(0x66CCCCFF);
+
+				}
 				else if (index >= y && line < lineSize)
 				{
-					frame.setNextPixelColor(color);
+					//frame.setNextPixelColor(color);
 					line++;
 				}
-				else 
-				frame.setNextPixelColor(0xf2d4c2ff);
+				else
+				{
+
+					//frame.setNextPixelColor(0xf2d4c2ff);
+				} 
 				index++;
 			}
 			
 		}
-		frame.display();
+		
+		//frame.display();
 	}
+	*/
+	
 };
